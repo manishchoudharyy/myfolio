@@ -43,6 +43,12 @@ export const authAPI = {
 // User APIs
 export const userAPI = {
     getMe: () => api.get("/user/me"),
+    update: (formData) => api.patch("/user/update", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+    }),
+    changePassword: (currentPassword, newPassword) =>
+        api.patch("/user/change-password", { currentPassword, newPassword }),
+    deletePortfolio: () => api.delete("/user/portfolio"),
 };
 
 // Template APIs
@@ -87,6 +93,31 @@ export const dashboardAPI = {
 // Public APIs
 export const publicAPI = {
     getPortfolio: (subdomain) => api.get(`/public/${subdomain}`),
+};
+
+// Upload APIs
+export const uploadAPI = {
+    image: (file) => {
+        const formData = new FormData();
+        formData.append("image", file);
+        return api.post("/upload/image", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+    },
+};
+
+// Resume APIs
+export const resumeAPI = {
+    getMy: () => api.get("/resume/my"),
+    getHistory: () => api.get("/resume/history"),
+    upload: (file) => {
+        const formData = new FormData();
+        formData.append("resume", file);
+        return api.post("/resume/upload", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+    },
+    delete: () => api.delete("/resume/delete"),
 };
 
 export default api;
