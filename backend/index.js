@@ -12,6 +12,8 @@ import portfolioRoutes from "./routes/portfolio.js";
 import aiRoutes from "./routes/ai.js";
 import dashboardRoutes from "./routes/dashboard.js";
 import publicRoutes from "./routes/public.js";
+import uploadRoutes from "./routes/upload.js";
+import resumeRoutes from "./routes/resume.js";
 
 const app = express();
 
@@ -37,6 +39,8 @@ app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/public", publicRoutes);
+app.use("/api/upload", uploadRoutes);
+app.use("/api/resume", resumeRoutes);
 
 // Connect DB and start server
 const port = process.env.PORT || 8000;
