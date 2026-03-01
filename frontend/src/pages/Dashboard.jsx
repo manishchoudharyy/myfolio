@@ -2,19 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import {
-    Eye, Edit3, Globe, Clock, ExternalLink, LogOut, Sparkles,
-    LayoutTemplate, Plus, CheckCircle2, AlertCircle, Zap,
-    Palette, Share2, ArrowRight, Rocket, Wand2, Monitor
+    Eye, Edit3, Globe, Clock, ExternalLink, Sparkles,
+    LayoutTemplate, CheckCircle2, AlertCircle, Rocket
 } from "lucide-react";
 import { dashboardAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
-import logo from "../assets/logo.png";
+import DashboardNav from "../components/DashboardNav";
 
 const Dashboard = () => {
     const [dashData, setDashData] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
 
     useEffect(() => {
         fetchDashboard();
@@ -31,10 +30,6 @@ const Dashboard = () => {
         }
     };
 
-    const handleLogout = () => {
-        logout();
-        navigate("/");
-    };
 
     if (loading) {
         return (
@@ -48,37 +43,14 @@ const Dashboard = () => {
     }
 
     const portfolio = dashData?.portfolio;
+    const portfolioUrl = portfolio?.status === "published" && portfolio?.subdomain
+        ? `https://${portfolio.subdomain}.myfolio.fun`
+        : null;
     const greeting = getGreeting();
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-            {/* Header */}
-            <header className="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <img src={logo} alt="MyFolio" className="w-9 h-9 rounded-full shadow-sm" />
-                        <div>
-                            <h1 className="font-bold text-slate-900 text-base leading-tight">MyFolio</h1>
-                            <p className="text-xs text-slate-400">Dashboard</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-full border border-slate-100">
-                            <div className="w-7 h-7 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xs">
-                                {user?.name?.charAt(0)?.toUpperCase() || "U"}
-                            </div>
-                            <span className="text-sm font-medium text-slate-700">{user?.name?.split(" ")[0]}</span>
-                        </div>
-                        <button
-                            onClick={handleLogout}
-                            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors font-medium"
-                        >
-                            <LogOut className="w-4 h-4" />
-                            <span className="hidden sm:inline">Logout</span>
-                        </button>
-                    </div>
-                </div>
-            </header>
+            <DashboardNav portfolioUrl={portfolioUrl} />
 
             <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
                 {/* Greeting */}
@@ -186,7 +158,7 @@ const Dashboard = () => {
                             <StatCard
                                 icon={<LayoutTemplate className="w-5 h-5 text-purple-600" />}
                                 label="Template"
-                                value={portfolio.templateId || "—"}
+                                value={portfolio.templateSlug || "—"}
                                 bg="bg-purple-50"
                             />
                             <StatCard
