@@ -9,6 +9,9 @@ import TemplateSelection from "./pages/TemplateSelection";
 import Editor from "./pages/Editor";
 import PublicPortfolio from "./pages/PublicPortfolio";
 import Onboarding from "./pages/Onboarding";
+import Resume from "./pages/Resume";
+import Profile from "./pages/Profile";
+import FullPage from "./pages/FullPage";
 
 function App() {
   return (
@@ -19,6 +22,7 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/p/:subdomain" element={<PublicPortfolio />} />
+          <Route path="/test" element={<FullPage />} />
 
           {/* Protected routes */}
           <Route
@@ -50,6 +54,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <Editor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resume"
+            element={
+              <ProtectedRoute>
+                <Resume />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             }
           />
