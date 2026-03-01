@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema(
             type: String,
             default: "",
         },
+        avatarPublicId: {
+            type: String,
+            default: "",
+        },
         googleId: {
             type: String,
             sparse: true,
