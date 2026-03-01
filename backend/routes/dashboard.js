@@ -22,6 +22,7 @@ router.get("/", auth, async (req, res) => {
                 portfolio: {
                     id: portfolio._id,
                     templateId: portfolio.templateId,
+                    templateSlug: portfolio.templateSlug,
                     status: portfolio.status,
                     subdomain: portfolio.subdomain,
                     views: portfolio.views,
