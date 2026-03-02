@@ -55,7 +55,7 @@ const DashboardNav = ({ portfolioUrl }) => {
                     </div>
 
                     {/* Desktop nav links */}
-                    <nav className="hidden md:flex items-center gap-1">
+                    <nav className="hidden md:flex items-center gap-0.5">
                         {links.map(({ to, icon: Icon, label }) => (
                             <NavLink
                                 key={to}
@@ -69,7 +69,8 @@ const DashboardNav = ({ portfolioUrl }) => {
                                 }
                             >
                                 <Icon className="w-4 h-4 shrink-0" />
-                                {label}
+                                {/* Label: hidden on md, visible on lg+ */}
+                                <span className="hidden lg:inline">{label}</span>
                             </NavLink>
                         ))}
 
@@ -81,33 +82,21 @@ const DashboardNav = ({ portfolioUrl }) => {
                                 className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-emerald-600 hover:bg-emerald-50 transition-colors"
                             >
                                 <ExternalLink className="w-4 h-4" />
-                                Live
+                                <span className="hidden lg:inline">Live</span>
                             </a>
                         )}
                     </nav>
 
                     {/* Right side */}
                     <div className="flex items-center gap-2 shrink-0">
-                        {/* Desktop: avatar + logout */}
+                        {/* Desktop: logout */}
                         <div className="hidden md:flex items-center gap-2">
-                            {/* <div className="flex items-center gap-2 px-2.5 py-1.5 bg-slate-50 rounded-full border border-slate-100">
-                                {user?.avatar ? (
-                                    <img src={user.avatar} alt={user.name} className="w-6 h-6 rounded-full object-cover" />
-                                ) : (
-                                    <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                                        {user?.name?.charAt(0)?.toUpperCase() || "U"}
-                                    </div>
-                                )}
-                                <span className="text-sm font-medium text-slate-700 max-w-[80px] truncate">
-                                    {user?.name?.split(" ")[0]}
-                                </span>
-                            </div> */}
                             <button
                                 onClick={handleLogout}
                                 className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors font-medium"
                             >
                                 <LogOut className="w-4 h-4" />
-                                Logout
+                                <span className="hidden lg:inline">Logout</span>
                             </button>
                         </div>
 
