@@ -63,8 +63,8 @@ const ResumeUpload = ({ onParsed }) => {
                 onDragOver={(e) => e.preventDefault()}
                 onClick={() => status === "idle" && inputRef.current?.click()}
                 className={`relative border-2 border-dashed rounded-2xl p-10 text-center transition-all cursor-pointer ${file
-                        ? "border-blue-300 bg-blue-50/50"
-                        : "border-slate-300 bg-white hover:border-blue-400 hover:bg-blue-50/30"
+                    ? "border-blue-300 bg-blue-50/50"
+                    : "border-slate-300 bg-white hover:border-blue-400 hover:bg-blue-50/30"
                     }`}
             >
                 <input
@@ -140,7 +140,7 @@ const ResumeUpload = ({ onParsed }) => {
                     onClick={handleUpload}
                     className="w-full mt-6 px-6 py-3.5 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
                 >
-                    Parse Resume with AI
+                    Upload Resume
                 </motion.button>
             )}
 

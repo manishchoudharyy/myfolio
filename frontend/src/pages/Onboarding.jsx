@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowLeft } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
@@ -23,6 +23,8 @@ const Onboarding = () => {
     const [portfolioId, setPortfolioId] = useState(null);
     const [refineSessionId, setRefineSessionId] = useState(null);
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const methodParam = searchParams.get("method"); // "resume" | "chat" | null
     const { user } = useAuth();
 
     // Check if user already has a portfolio → go to preview/refine
@@ -40,12 +42,26 @@ const Onboarding = () => {
                 setSelectedTemplateSlug(res.data.data.templateSlug);
                 setStep("preview");
             } else {
-                // Check for active onboarding session
-                const sessionRes = await aiAPI.getSession();
-                if (sessionRes.data.data) {
-                    setSessionId(sessionRes.data.data.sessionId);
-                    setCollectedData(sessionRes.data.data.collectedData || {});
+                // If came from dashboard with a method param → skip MethodSelect
+                if (methodParam === "resume") {
+                    setStep("resume");
+                } else if (methodParam === "chat") {
+                    // Check for existing session first
+                    const sessionRes = await aiAPI.getSession();
+                    if (sessionRes.data.data) {
+                        setSessionId(sessionRes.data.data.sessionId);
+                        setCollectedData(sessionRes.data.data.collectedData || {});
+                    }
                     setStep("chat");
+                } else {
+                    // No param → check for existing session, then show MethodSelect
+                    const sessionRes = await aiAPI.getSession();
+                    if (sessionRes.data.data) {
+                        setSessionId(sessionRes.data.data.sessionId);
+                        setCollectedData(sessionRes.data.data.collectedData || {});
+                        setStep("chat");
+                    }
+                    // else: stays on "method" (MethodSelect)
                 }
             }
         } catch (err) {
@@ -108,29 +124,43 @@ const Onboarding = () => {
         return 0;
     };
 
+    // canGoBack: always true except on method/preview/publish
     const canGoBack = ["resume", "chat", "template"].includes(step);
 
     const handleBack = () => {
-        if (step === "resume" || step === "chat") setStep("method");
-        else if (step === "template") setStep("chat");
+        if (step === "resume" || step === "chat") {
+            // If user came via ?method param from dashboard, go back to dashboard
+            if (methodParam) navigate("/dashboard");
+            else setStep("method");
+        } else if (step === "template") {
+            // Go back to whichever data step was used
+            setStep(methodParam === "resume" ? "resume" : "chat");
+        }
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-            {/* Top bar with progress */}
-            {step !== "preview" && (
-                <header className="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30">
-                    <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            {canGoBack && (
-                                <button onClick={handleBack} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
-                                    <ArrowLeft className="w-5 h-5 text-slate-600" />
-                                </button>
-                            )}
-                            <h1 className="font-bold text-slate-900">Create Portfolio</h1>
-                        </div>
+        <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-blue-50">
+            {/* Top bar with progress — shown on ALL steps */}
+            <header className="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 shrink-0">
+                <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        {canGoBack && (
+                            <button onClick={handleBack} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+                                <ArrowLeft className="w-5 h-5 text-slate-600" />
+                            </button>
+                        )}
+                        {step === "preview" && (
+                            <button onClick={() => navigate("/dashboard")} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+                                <ArrowLeft className="w-5 h-5 text-slate-600" />
+                            </button>
+                        )}
+                        <h1 className="font-bold text-slate-900">
+                            {step === "preview" ? "Edit Portfolio" : "Create Portfolio"}
+                        </h1>
+                    </div>
 
-                        {/* Progress dots */}
+                    {/* Progress dots — hidden on preview (PreviewRefine has its own publish btn) */}
+                    {step !== "preview" && (
                         <div className="flex items-center gap-2">
                             {progressSteps.map((ps, i) => (
                                 <div key={ps.key} className="flex items-center gap-2">
@@ -146,80 +176,83 @@ const Onboarding = () => {
                                 </div>
                             ))}
                         </div>
-                    </div>
-                </header>
-            )}
+                    )}
+                </div>
+            </header>
 
             {/* Step content */}
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={step}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
-                >
-                    {step === "method" && (
-                        <MethodSelect
-                            onChooseResume={() => setStep("resume")}
-                            onChooseChat={() => setStep("chat")}
-                        />
-                    )}
+            <div className="flex-1 overflow-hidden">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={step}
+                        initial={{ opacity: 0, y: step === "preview" ? 0 : 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: step === "preview" ? 0 : -20 }}
+                        transition={{ duration: 0.25 }}
+                        className={step === "preview" ? "h-full" : ""}
+                    >
+                        {step === "method" && (
+                            <MethodSelect
+                                onChooseResume={() => setStep("resume")}
+                                onChooseChat={() => setStep("chat")}
+                            />
+                        )}
 
-                    {step === "resume" && (
-                        <ResumeUpload
-                            onParsed={(data) => {
-                                setCollectedData(data);
-                                setStep("template");
-                            }}
-                        />
-                    )}
+                        {step === "resume" && (
+                            <ResumeUpload
+                                onParsed={(data) => {
+                                    setCollectedData(data);
+                                    setStep("template");
+                                }}
+                            />
+                        )}
 
-                    {step === "chat" && (
-                        <AIChat
-                            sessionId={sessionId}
-                            collectedData={collectedData}
-                            onSessionId={setSessionId}
-                            onDataUpdate={setCollectedData}
-                            onComplete={(data) => {
-                                setCollectedData(data);
-                                setStep("template");
-                            }}
-                        />
-                    )}
+                        {step === "chat" && (
+                            <AIChat
+                                sessionId={sessionId}
+                                collectedData={collectedData}
+                                onSessionId={setSessionId}
+                                onDataUpdate={setCollectedData}
+                                onComplete={(data) => {
+                                    setCollectedData(data);
+                                    setStep("template");
+                                }}
+                            />
+                        )}
 
-                    {step === "template" && (
-                        <TemplateGrid
-                            onSelect={(slug) => {
-                                setSelectedTemplateSlug(slug);
-                                handleCreatePortfolio(slug);
-                            }}
-                        />
-                    )}
+                        {step === "template" && (
+                            <TemplateGrid
+                                onSelect={(slug) => {
+                                    setSelectedTemplateSlug(slug);
+                                    handleCreatePortfolio(slug);
+                                }}
+                            />
+                        )}
 
-                    {step === "preview" && (
-                        <PreviewRefine
-                            portfolioId={portfolioId}
-                            portfolioData={collectedData}
-                            templateId={selectedTemplate}
-                            templateSlug={selectedTemplateSlug}
-                            refineSessionId={refineSessionId}
-                            onSessionId={setRefineSessionId}
-                            onDataUpdate={setCollectedData}
-                            onPublish={() => setStep("publish")}
-                            onChangeTemplate={() => setStep("template")}
-                        />
-                    )}
+                        {step === "preview" && (
+                            <PreviewRefine
+                                portfolioId={portfolioId}
+                                portfolioData={collectedData}
+                                templateId={selectedTemplate}
+                                templateSlug={selectedTemplateSlug}
+                                refineSessionId={refineSessionId}
+                                onSessionId={setRefineSessionId}
+                                onDataUpdate={setCollectedData}
+                                onPublish={() => setStep("publish")}
+                                onChangeTemplate={() => setStep("template")}
+                            />
+                        )}
 
-                    {step === "publish" && (
-                        <PublishStep
-                            portfolioId={portfolioId}
-                            onPublished={() => navigate("/dashboard")}
-                            onBack={() => setStep("preview")}
-                        />
-                    )}
-                </motion.div>
-            </AnimatePresence>
+                        {step === "publish" && (
+                            <PublishStep
+                                portfolioId={portfolioId}
+                                onPublished={() => navigate("/dashboard")}
+                                onBack={() => setStep("preview")}
+                            />
+                        )}
+                    </motion.div>
+                </AnimatePresence>
+            </div>
         </div>
     );
 };
