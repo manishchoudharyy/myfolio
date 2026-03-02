@@ -7,10 +7,10 @@ const router = Router();
 
 // POST /api/portfolio/create
 router.post("/create", auth, async (req, res) => {
-    console.log("first")
+
     try {
         const { templateId, templateSlug, data } = req.body;
-        console.log(req.body)
+
         if (!templateId) {
             return res.status(400).json({
                 success: false,
@@ -69,9 +69,7 @@ router.post("/create", auth, async (req, res) => {
             error: { message: "Failed to create portfolio", code: "CREATE_ERROR" },
         });
     }
-    finally {
-        console.log("FCk yrrr")
-    }
+
 });
 
 // GET /api/portfolio/:id

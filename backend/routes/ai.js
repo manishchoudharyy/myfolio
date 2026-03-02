@@ -3,13 +3,38 @@ import OpenAI from "openai";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 import { PDFParse } from "pdf-parse"
+import { v2 as cloudinary } from "cloudinary";
 import auth from "../middleware/auth.js";
 import upload from "../middleware/upload.js";
 import Portfolio from "../models/Portfolio.js";
 import ChatSession from "../models/ChatSession.js";
 import Resume from "../models/Resume.js";
+import ParsedResume from "../models/ParsedResume.js";
 
 const router = Router();
+
+// Cloudinary config
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+function uploadToCloudinary(buffer, options) {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(options, (err, result) => {
+            if (err) reject(err);
+            else resolve(result);
+        });
+        stream.end(buffer);
+    });
+}
+
+function formatSize(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 // OpenAI client using GitHub Models
 const client = new OpenAI({
@@ -204,13 +229,41 @@ router.post("/resume-parse", auth, upload.single("resume"), async (req, res) => 
             });
         }
 
-        console.log(req.file.originalname);
-        // return;
-        // Extract text from PDF
+        // ── Step 1: Upload PDF to Cloudinary ──────────────────────
+        let savedResume = null;
+        try {
+            const cloudResult = await uploadToCloudinary(req.file.buffer, {
+                folder: "myfolio/resumes",
+                resource_type: "raw",
+                format: "pdf",
+                public_id: `resume_${req.user._id}_${Date.now()}`,
+            });
+
+            // Mark existing active resume as replaced
+            await Resume.updateMany(
+                { userId: req.user._id, isReplaced: false },
+                { $set: { isReplaced: true } }
+            );
+
+            // Save new Resume document
+            savedResume = await Resume.create({
+                userId: req.user._id,
+                url: cloudResult.secure_url,
+                publicId: cloudResult.public_id,
+                name: req.file.originalname,
+                size: formatSize(req.file.size),
+                uploadedAt: new Date(),
+                isReplaced: false,
+            });
+        } catch (cloudErr) {
+            // Don't block parsing if cloud upload fails — log and continue
+            console.error("Cloudinary upload warning (non-fatal):", cloudErr.message);
+        }
+
+        // ── Step 2: Extract text from PDF ─────────────────────────
         const parser = new PDFParse({ data: req.file.buffer });
         const pdfData = await parser.getText();
         const resumeText = pdfData.text;
-        console.log("FU", resumeText)
 
         if (!resumeText) {
             return res.status(400).json({
@@ -219,7 +272,7 @@ router.post("/resume-parse", auth, upload.single("resume"), async (req, res) => 
             });
         }
 
-        // Send to AI for structured extraction
+        // ── Step 3: AI extraction ──────────────────────────────────
         const responseText = await aiChat([
             { role: "system", content: RESUME_PARSE_PROMPT },
             { role: "user", content: resumeText },
@@ -234,14 +287,29 @@ router.post("/resume-parse", auth, upload.single("resume"), async (req, res) => 
             });
         }
 
-        const resume = await Resume.create({
+        // ── Step 4: Save parsed data to ParsedResume model ────────
+        // Mark old active parsed data as inactive
+        await ParsedResume.updateMany(
+            { userId: req.user._id, isActive: true },
+            { $set: { isActive: false } }
+        );
+
+        await ParsedResume.create({
             userId: req.user._id,
+            resumeId: savedResume?._id || null,
             data: parsedData,
+            rawTextLength: resumeText.length,
+            isActive: true,
+            parsedAt: new Date(),
         });
 
         return res.json({
             success: true,
             data: parsedData,
+            meta: {
+                resumeId: savedResume?._id || null,
+                resumeUrl: savedResume?.url || null,
+            },
         });
     } catch (error) {
         console.error("Resume Parse Error:", error);
