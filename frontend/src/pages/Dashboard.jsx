@@ -70,38 +70,122 @@ const Dashboard = () => {
                 </motion.div>
 
                 {!portfolio ? (
-                    // =================== EMPTY STATE — Redirect to Onboarding ===================
+                    // =================== EMPTY STATE ===================
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 rounded-2xl p-8 sm:p-12 text-white overflow-hidden"
+                        className="bg-white border border-slate-200 rounded-3xl shadow-sm p-8 sm:p-12 space-y-8"
                     >
-                        <div className="absolute inset-0 overflow-hidden">
-                            <div className="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full -translate-y-1/3 translate-x-1/3" />
-                            <div className="absolute bottom-0 left-0 w-56 h-56 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/3" />
-                        </div>
-                        <div className="relative z-10 text-center max-w-lg mx-auto">
+                        {/* Hero text */}
+                        <div className="text-center max-w-xl mx-auto pt-2">
                             <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ type: "spring", delay: 0.2 }}
-                                className="w-16 h-16 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 border border-white/20"
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ type: "spring", delay: 0.15 }}
+                                className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-700 text-xs font-semibold px-4 py-1.5 rounded-full mb-5"
                             >
-                                <Rocket className="w-8 h-8 text-white" />
+                                <Sparkles className="w-3.5 h-3.5" />
+                                AI-Powered Portfolio Builder
                             </motion.div>
-                            <h3 className="text-2xl sm:text-3xl font-bold mb-3">Build Your Portfolio</h3>
-                            <p className="text-blue-100 mb-8 text-sm sm:text-base leading-relaxed">
-                                Upload your resume or chat with AI to create a stunning portfolio in minutes.
+                            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3 leading-tight">
+                                Create your portfolio <br />
+                                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                                    in minutes
+                                </span>
+                            </h2>
+                            <p className="text-slate-500 text-sm sm:text-base leading-relaxed">
+                                Choose how you'd like to build — upload your existing resume or let our AI guide you step by step.
                             </p>
+                        </div>
+
+                        {/* Two option cards */}
+                        <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto w-full">
+
+                            {/* Option 1 — Upload Resume */}
                             <motion.button
-                                whileHover={{ scale: 1.05, y: -2 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => navigate("/onboarding")}
-                                className="inline-flex items-center gap-2 bg-white text-indigo-700 px-8 py-3.5 rounded-xl font-bold shadow-xl shadow-indigo-900/30 hover:shadow-2xl transition-all"
+                                whileHover={{ y: -3, scale: 1.01 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => navigate("/onboarding?method=resume")}
+                                className="group relative text-left bg-slate-50 rounded-2xl border border-slate-200 p-6 hover:shadow-md hover:border-blue-300 transition-all duration-200 overflow-hidden"
                             >
-                                <Sparkles className="w-5 h-5" /> Start with AI
+                                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/0 to-blue-100/0 group-hover:from-blue-50/80 group-hover:to-indigo-50/60 transition-all duration-300 rounded-2xl" />
+
+                                <div className="relative z-10">
+                                    <div className="w-12 h-12 bg-blue-100 group-hover:bg-blue-600 rounded-xl flex items-center justify-center mb-4 transition-colors duration-200">
+                                        <svg className="w-6 h-6 text-blue-600 group-hover:text-white transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-lg font-bold text-slate-900 mb-1.5">Upload Resume</h3>
+                                    <p className="text-slate-500 text-sm leading-relaxed mb-4">
+                                        Have a resume ready? Upload your PDF and AI will extract all your details instantly.
+                                    </p>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {["PDF only", "Auto-parsed by AI", "~10 seconds"].map((t) => (
+                                            <span key={t} className="text-xs bg-white group-hover:bg-blue-100 text-slate-500 group-hover:text-blue-700 px-2.5 py-0.5 rounded-full border border-slate-200 group-hover:border-blue-200 transition-colors">
+                                                {t}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="absolute bottom-5 right-5 w-7 h-7 bg-white group-hover:bg-blue-600 rounded-full flex items-center justify-center border border-slate-200 group-hover:border-blue-600 transition-colors duration-200 shadow-sm">
+                                    <Rocket className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors duration-200" />
+                                </div>
                             </motion.button>
+
+                            {/* Option 2 — Chat with AI */}
+                            <motion.button
+                                whileHover={{ y: -3, scale: 1.01 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => navigate("/onboarding?method=chat")}
+                                className="group relative text-left bg-slate-50 rounded-2xl border border-slate-200 p-6 hover:shadow-md hover:border-violet-300 transition-all duration-200 overflow-hidden"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-br from-violet-50/0 to-purple-50/0 group-hover:from-violet-50/80 group-hover:to-purple-50/60 transition-all duration-300 rounded-2xl" />
+
+                                <div className="absolute top-4 right-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
+                                    POPULAR
+                                </div>
+
+                                <div className="relative z-10">
+                                    <div className="w-12 h-12 bg-violet-100 group-hover:bg-violet-600 rounded-xl flex items-center justify-center mb-4 transition-colors duration-200">
+                                        <Sparkles className="w-6 h-6 text-violet-600 group-hover:text-white transition-colors duration-200" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-slate-900 mb-1.5">Chat with AI</h3>
+                                    <p className="text-slate-500 text-sm leading-relaxed mb-4">
+                                        No resume? No problem. Answer a few questions and AI builds your portfolio.
+                                    </p>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {["Conversational", "Step-by-step", "No resume needed"].map((t) => (
+                                            <span key={t} className="text-xs bg-white group-hover:bg-violet-100 text-slate-500 group-hover:text-violet-700 px-2.5 py-0.5 rounded-full border border-slate-200 group-hover:border-violet-200 transition-colors">
+                                                {t}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="absolute bottom-5 right-5 w-7 h-7 bg-white group-hover:bg-violet-600 rounded-full flex items-center justify-center border border-slate-200 group-hover:border-violet-600 transition-colors duration-200 shadow-sm">
+                                    <Sparkles className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors duration-200" />
+                                </div>
+                            </motion.button>
+                        </div>
+
+                        {/* Step indicator */}
+                        <div className="flex items-center justify-center gap-4 sm:gap-6 text-xs text-slate-400 pt-2 border-t border-slate-100">
+                            {[
+                                { n: "1", label: "Choose method" },
+                                { n: "2", label: "AI builds portfolio" },
+                                { n: "3", label: "Pick template & publish" },
+                            ].map((s, i) => (
+                                <React.Fragment key={s.n}>
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-500">
+                                            {s.n}
+                                        </div>
+                                        <span className="hidden sm:inline">{s.label}</span>
+                                    </div>
+                                    {i < 2 && <div className="w-6 h-px bg-slate-200" />}
+                                </React.Fragment>
+                            ))}
                         </div>
                     </motion.div>
                 ) : (
@@ -229,7 +313,7 @@ const Dashboard = () => {
                     </div>
                 )}
             </main>
-        </div>
+        </div >
     );
 };
 
