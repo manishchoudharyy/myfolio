@@ -22,9 +22,11 @@ const Onboarding = () => {
     const [selectedTemplateSlug, setSelectedTemplateSlug] = useState(null);
     const [portfolioId, setPortfolioId] = useState(null);
     const [refineSessionId, setRefineSessionId] = useState(null);
+    const [wasExisting, setWasExisting] = useState(false); // true = editing existing portfolio
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const methodParam = searchParams.get("method"); // "resume" | "chat" | null
+    const stepParam = searchParams.get("step");   // "template" | null
     const { user } = useAuth();
 
     // Check if user already has a portfolio → go to preview/refine
@@ -40,7 +42,13 @@ const Onboarding = () => {
                 setCollectedData(res.data.data.data || {});
                 setSelectedTemplate(res.data.data.templateId);
                 setSelectedTemplateSlug(res.data.data.templateSlug);
-                setStep("preview");
+                setWasExisting(true); // <-- portfolio already existed
+                // If ?step=template → skip to template change
+                if (stepParam === "template") {
+                    setStep("template");
+                } else {
+                    setStep("preview");
+                }
             } else {
                 // If came from dashboard with a method param → skip MethodSelect
                 if (methodParam === "resume") {
@@ -236,9 +244,10 @@ const Onboarding = () => {
                                 templateId={selectedTemplate}
                                 templateSlug={selectedTemplateSlug}
                                 refineSessionId={refineSessionId}
+                                isExistingPortfolio={wasExisting}
                                 onSessionId={setRefineSessionId}
                                 onDataUpdate={setCollectedData}
-                                onPublish={() => setStep("publish")}
+                                onPublish={() => wasExisting ? navigate("/edit") : setStep("publish")}
                                 onChangeTemplate={() => setStep("template")}
                             />
                         )}
