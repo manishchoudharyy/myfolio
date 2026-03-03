@@ -10,10 +10,11 @@ import logo from "../assets/logo.png";
 
 const links = [
     { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { to: "/onboarding", icon: Sparkles, label: "Edit Portfolio" },
+    { to: "/edit", icon: Sparkles, label: "Portfolio" },
     { to: "/resume", icon: FileText, label: "Resume" },
     { to: "/profile", icon: UserCircle2, label: "Profile" },
 ];
+
 
 const DashboardNav = ({ portfolioUrl }) => {
     const { user, logout } = useAuth();
