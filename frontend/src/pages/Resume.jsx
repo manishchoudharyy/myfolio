@@ -2,11 +2,21 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
     FileText, Trash2, RefreshCw, CheckCircle2,
-    Loader2, AlertCircle, Download, Eye, FilePlus2, CloudUpload, History
+    Loader2, AlertCircle, Download, Eye, FilePlus2, CloudUpload, Sparkles
 } from "lucide-react";
 import DashboardNav from "../components/DashboardNav";
 import { resumeAPI } from "../services/api";
 import { useNavigate } from "react-router-dom";
+
+// Helper to format bytes
+function formatBytes(bytes, decimals = 2) {
+    if (!+bytes) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+}
 
 const Resume = () => {
     const [resume, setResume] = useState(null);
@@ -23,6 +33,14 @@ const Resume = () => {
     useEffect(() => {
         fetchResume();
     }, []);
+
+    // Auto-dismiss success message
+    useEffect(() => {
+        if (success) {
+            const timer = setTimeout(() => setSuccess(""), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [success]);
 
     const fetchResume = async () => {
         try {
@@ -57,13 +75,16 @@ const Resume = () => {
             setError(err.response?.data?.error?.message || "Upload failed. Try again.");
         } finally {
             setUploading(false);
+            if (inputRef.current) inputRef.current.value = ""; // Reset input
         }
     };
 
     const handleDrop = (e) => {
         e.preventDefault();
         setDragOver(false);
-        handleFile(e.dataTransfer.files[0]);
+        if (!uploading && e.dataTransfer.files?.length) {
+            handleFile(e.dataTransfer.files[0]);
+        }
     };
 
     const handleDelete = async () => {
@@ -87,211 +108,265 @@ const Resume = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+            <div className="min-h-screen bg-slate-50 flex flex-col">
                 <DashboardNav />
-                <div className="flex items-center justify-center h-[60vh]">
-                    <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                <div className="flex-1 flex items-center justify-center">
+                    <div className="flex flex-col items-center gap-3">
+                        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                        <p className="text-sm text-slate-400 font-medium">Loading your resume...</p>
+                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+        <div className="min-h-screen bg-slate-50">
             <DashboardNav />
 
             <main className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
-                {/* Page header */}
+                {/* ── Page Header ──────────────────────────── */}
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-8"
                 >
                     <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Resume</h1>
-                    <p className="text-slate-500 mt-1 text-sm">
-                        Upload your resume — AI will parse it to build your portfolio instantly.
+                    <p className="text-slate-500 mt-1 text-sm sm:text-base">
+                        Keep your base resume updated here. We use it as the source of truth for AI generation.
                     </p>
                 </motion.div>
 
+                {/* ── Notifications ────────────────────────── */}
+                <AnimatePresence mode="popLayout">
+                    {success && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                            className="mb-6 flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-sm text-green-700 shadow-sm"
+                        >
+                            <CheckCircle2 className="w-4 h-4 shrink-0" />
+                            {success}
+                        </motion.div>
+                    )}
+                    {error && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                            className="mb-6 flex items-center justify-between gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700 shadow-sm"
+                        >
+                            <div className="flex items-center gap-2">
+                                <AlertCircle className="w-4 h-4 shrink-0" />
+                                {error}
+                            </div>
+                            <button onClick={() => setError("")} className="text-red-400 hover:text-red-700 font-medium">Clear</button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* ── Hidden File Input ────────────────────── */}
+                <input
+                    ref={inputRef}
+                    type="file"
+                    accept="application/pdf"
+                    className="hidden"
+                    onChange={(e) => handleFile(e.target.files?.[0])}
+                />
+
                 <AnimatePresence mode="wait">
-                    {/* ─── NO RESUME ─── */}
+                    {/* ── NO RESUME STATE ────────────────────── */}
                     {!resume && (
                         <motion.div
                             key="upload"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
+                            className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden"
                         >
                             <div
                                 onClick={() => !uploading && inputRef.current?.click()}
                                 onDrop={handleDrop}
                                 onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                                 onDragLeave={() => setDragOver(false)}
-                                className={`relative border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all
+                                className={`relative p-10 sm:p-14 text-center cursor-pointer transition-all duration-300
                                     ${dragOver
-                                        ? "border-blue-500 bg-blue-50"
-                                        : "border-slate-200 bg-white hover:border-blue-400 hover:bg-blue-50/40"
+                                        ? "bg-blue-50/80"
+                                        : "bg-white hover:bg-slate-50"
                                     }`}
                             >
+                                <div className={`absolute inset-4 rounded-2xl border-2 border-dashed transition-colors duration-300 pointer-events-none ${dragOver ? "border-blue-400" : "border-slate-200"}`} />
+
                                 {uploading ? (
-                                    <div className="flex flex-col items-center gap-4">
-                                        <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center">
+                                    <div className="flex flex-col items-center gap-5 relative z-10">
+                                        <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center shadow-inner">
                                             <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
                                         </div>
                                         <div>
-                                            <p className="font-semibold text-slate-800">Uploading to cloud...</p>
-                                            <p className="text-sm text-slate-400 mt-0.5">Please wait</p>
+                                            <p className="font-bold text-slate-800 text-lg">Parsing your PDF...</p>
+                                            <p className="text-sm text-slate-500 mt-1">Extracting skills, experience, and projects</p>
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="flex flex-col items-center gap-4">
-                                        <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors
-                                            ${dragOver ? "bg-blue-100" : "bg-slate-100"}`}>
-                                            <CloudUpload className={`w-8 h-8 transition-colors ${dragOver ? "text-blue-600" : "text-slate-400"}`} />
+                                    <div className="flex flex-col items-center gap-5 relative z-10">
+                                        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors shadow-sm
+                                            ${dragOver ? "bg-blue-600 shadow-blue-200" : "bg-blue-50"}`}>
+                                            <CloudUpload className={`w-7 h-7 transition-colors ${dragOver ? "text-white" : "text-blue-600"}`} />
                                         </div>
                                         <div>
-                                            <p className="font-semibold text-slate-800 text-lg">
-                                                {dragOver ? "Drop it here!" : "Upload your Resume"}
+                                            <p className="font-bold text-slate-900 text-xl sm:text-2xl mb-2">
+                                                {dragOver ? "Drop it!" : "Upload your resume"}
                                             </p>
-                                            <p className="text-sm text-slate-400 mt-1">
-                                                Drag & drop or <span className="text-blue-600 font-medium">browse</span> — PDF only, max 10 MB
+                                            <p className="text-sm text-slate-500">
+                                                Drag & drop your file here, or <span className="text-blue-600 font-semibold hover:underline">browse</span>
                                             </p>
-                                        </div>
-                                        <div className="flex flex-wrap justify-center gap-2 mt-2">
-                                            {["AI parses automatically", "Secure cloud storage", "Replace anytime"].map((t) => (
-                                                <span key={t} className="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium border border-blue-100">
-                                                    ✓ {t}
-                                                </span>
-                                            ))}
+                                            <p className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">
+                                                PDF only · Max 10MB
+                                            </p>
                                         </div>
                                     </div>
                                 )}
                             </div>
-
-                            {error && (
-                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                                    className="mt-4 flex items-center gap-2 text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm">
-                                    <AlertCircle className="w-4 h-4 shrink-0" /> {error}
-                                </motion.div>
-                            )}
-
-                            <input ref={inputRef} type="file" accept="application/pdf" className="hidden"
-                                onChange={(e) => handleFile(e.target.files[0])} />
                         </motion.div>
                     )}
 
-                    {/* ─── RESUME EXISTS ─── */}
+                    {/* ── RESUME EXISTS STATE ────────────────── */}
                     {resume && (
                         <motion.div
                             key="preview"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
-                            className="space-y-4"
+                            className="space-y-6"
                         >
-                            {success && (
-                                <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                                    className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-sm text-green-700">
-                                    <CheckCircle2 className="w-4 h-4 shrink-0" /> {success}
-                                </motion.div>
-                            )}
-
-                            {error && (
-                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                                    className="flex items-center gap-2 text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm">
-                                    <AlertCircle className="w-4 h-4 shrink-0" /> {error}
-                                </motion.div>
-                            )}
-
-                            {/* Resume card */}
+                            {/* Main Resume Card */}
                             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-5 flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                                        <FileText className="w-7 h-7 text-white" />
+                                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5">
+                                    <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-inner shrink-0 text-white font-bold text-xl uppercase border border-white/20">
+                                        PDF
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-semibold text-white truncate text-lg leading-snug">{resume.name}</p>
-                                        <p className="text-blue-200 text-sm mt-0.5">PDF Document</p>
+                                        <p className="font-bold text-white text-lg sm:text-xl truncate leading-tight mb-1">
+                                            {resume.name}
+                                        </p>
+                                        <div className="flex items-center gap-3 text-blue-200 text-xs font-medium">
+                                            <span className="flex items-center gap-1">
+                                                <CheckCircle2 className="w-3.5 h-3.5" /> Parsed successfully
+                                            </span>
+                                            <span className="w-1 h-1 bg-blue-300 rounded-full" />
+                                            <span>
+                                                {/* If backend returns bytes, format it. If it returns string like '1.2MB' use it directly */}
+                                                {typeof resume.size === 'number' ? formatBytes(resume.size) : resume.size || "Unknown size"}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <span className="text-white/80 text-sm font-mono shrink-0">{resume.size}</span>
                                 </div>
 
-                                <div className="p-5">
-                                    <div className="flex items-center gap-2 text-sm text-slate-500 mb-5">
-                                        <CheckCircle2 className="w-4 h-4 text-green-500" />
+                                <div className="p-5 sm:p-6">
+                                    <p className="text-sm text-slate-500 mb-5 font-medium">
                                         Uploaded on {formatDate(resume.uploadedAt)}
-                                    </div>
+                                    </p>
 
                                     <div className="flex flex-wrap gap-3">
-                                        <a href={resume.url} target="_blank" rel="noreferrer"
-                                            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">
-                                            <Eye className="w-4 h-4" /> View
+                                        <a
+                                            href={resume.url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors shadow-sm"
+                                        >
+                                            <Eye className="w-4 h-4 shrink-0" /> <span className="truncate">View File</span>
                                         </a>
-                                        <a href={resume.url} download={resume.name}
-                                            className="flex items-center gap-2 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-50 transition-colors">
-                                            <Download className="w-4 h-4" /> Download
-                                        </a>
-                                        <button onClick={() => inputRef.current?.click()}
-                                            className="flex items-center gap-2 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-50 transition-colors">
-                                            <RefreshCw className="w-4 h-4" /> Replace
+                                        <button
+                                            onClick={() => inputRef.current?.click()}
+                                            disabled={uploading}
+                                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 border border-slate-200 text-slate-700 bg-white rounded-xl text-sm font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all disabled:opacity-50"
+                                        >
+                                            {uploading ? <Loader2 className="w-4 h-4 animate-spin shrink-0" /> : <RefreshCw className="w-4 h-4 shrink-0" />}
+                                            <span className="truncate">{uploading ? "Replacing..." : "Replace"}</span>
                                         </button>
-                                        <button onClick={() => setShowDeleteConfirm(true)}
-                                            className="flex items-center gap-2 px-4 py-2.5 border border-red-100 text-red-600 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors">
-                                            <Trash2 className="w-4 h-4" /> Remove
+                                        <a
+                                            href={resume.url}
+                                            download={resume.name}
+                                            className="w-11 h-11 flex items-center justify-center border border-slate-200 text-slate-600 bg-white rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all shrink-0"
+                                            title="Download"
+                                        >
+                                            <Download className="w-4 h-4" />
+                                        </a>
+                                        <button
+                                            onClick={() => setShowDeleteConfirm(true)}
+                                            className="w-11 h-11 flex items-center justify-center border border-red-100 text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-all shrink-0 sm:ml-auto"
+                                            title="Delete permanently"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Re-parse nudge */}
-                            <div className="bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-100 rounded-xl p-4 flex items-start gap-3">
-                                <FilePlus2 className="w-5 h-5 text-violet-600 shrink-0 mt-0.5" />
-                                <div className="flex-1">
-                                    <p className="text-sm font-semibold text-violet-900">Want to re-build portfolio from this resume?</p>
-                                    <p className="text-xs text-violet-600 mt-0.5">AI will re-parse and update your content automatically.</p>
+                            {/* Re-parse nudge (More contextual flow) */}
+                            <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row gap-5 items-start sm:items-center shadow-sm">
+                                <div className="w-12 h-12 bg-violet-100 rounded-xl flex items-center justify-center shrink-0">
+                                    <Sparkles className="w-6 h-6 text-violet-600" />
                                 </div>
-                                <button onClick={() => navigate("/onboarding")}
-                                    className="shrink-0 px-3 py-1.5 bg-violet-600 text-white text-xs font-medium rounded-lg hover:bg-violet-700 transition-colors">
-                                    Re-parse
+                                <div className="flex-1">
+                                    <h3 className="text-base font-bold text-slate-900 mb-1">
+                                        Update your portfolio?
+                                    </h3>
+                                    <p className="text-sm text-slate-500 leading-relaxed">
+                                        If you've replaced your resume, you can let our AI re-read it to update your portfolio sections instantly without typing.
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => navigate("/onboarding")}
+                                    className="w-full sm:w-auto px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"
+                                >
+                                    <FilePlus2 className="w-4 h-4" /> Re-build Portfolio
                                 </button>
                             </div>
-
-                            <input ref={inputRef} type="file" accept="application/pdf" className="hidden"
-                                onChange={(e) => handleFile(e.target.files[0])} />
                         </motion.div>
                     )}
                 </AnimatePresence>
             </main>
 
-            {/* Delete Confirm Modal */}
+            {/* ── Delete Confirm Modal ─────────────────── */}
             <AnimatePresence>
                 {showDeleteConfirm && (
                     <motion.div
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
                         onClick={() => setShowDeleteConfirm(false)}
                     >
                         <motion.div
-                            initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
+                            initial={{ scale: 0.95, opacity: 0, y: 10 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
                             onClick={(e) => e.stopPropagation()}
-                            className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm"
+                            className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 w-full max-w-sm"
                         >
-                            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Trash2 className="w-6 h-6 text-red-600" />
+                            <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                                <Trash2 className="w-7 h-7 text-red-500" />
                             </div>
-                            <h3 className="text-lg font-bold text-center text-slate-900 mb-1">Remove Resume?</h3>
-                            <p className="text-sm text-center text-slate-500 mb-6">
-                                Your resume will be removed from your active profile. The file will be kept in history.
+                            <h3 className="text-xl font-bold text-center text-slate-900 mb-2">Remove Resume?</h3>
+                            <p className="text-sm text-center text-slate-500 mb-6 leading-relaxed">
+                                This will permanently delete this resume file from your profile. It will not delete your current portfolio sections.
                             </p>
-                            <div className="flex gap-3">
-                                <button onClick={() => setShowDeleteConfirm(false)}
-                                    className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50">
+                            <div className="flex flex-col-reverse sm:flex-row gap-3">
+                                <button
+                                    onClick={() => setShowDeleteConfirm(false)}
+                                    className="flex-1 px-4 py-3 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+                                >
                                     Cancel
                                 </button>
-                                <button onClick={handleDelete} disabled={deleting}
-                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 disabled:opacity-60">
+                                <button
+                                    onClick={handleDelete}
+                                    disabled={deleting}
+                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700 transition-colors disabled:opacity-60 shadow-sm"
+                                >
                                     {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                                    {deleting ? "Removing..." : "Yes, Remove"}
+                                    Yes, Remove
                                 </button>
                             </div>
                         </motion.div>
