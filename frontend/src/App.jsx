@@ -9,6 +9,7 @@ import TemplateSelection from "./pages/TemplateSelection";
 import Editor from "./pages/Editor";
 import PublicPortfolio from "./pages/PublicPortfolio";
 import Onboarding from "./pages/Onboarding";
+import EditPortfolio from "./pages/EditPortfolio";
 import Resume from "./pages/Resume";
 import Profile from "./pages/Profile";
 import FullPage from "./pages/FullPage";
@@ -38,6 +39,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Onboarding />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/edit"
+            element={
+              <ProtectedRoute>
+                <EditPortfolio />
               </ProtectedRoute>
             }
           />
