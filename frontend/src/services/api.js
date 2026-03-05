@@ -34,10 +34,10 @@ api.interceptors.response.use(
 // Auth APIs
 export const authAPI = {
     googleLogin: (credential) => api.post("/auth/google", { credential }),
-    sendOTP: (phone) => api.post("/auth/send-otp", { phone }),
-    verifyOTP: (phone, sessionId, otp) => api.post("/auth/verify-otp", { phone, sessionId, otp }),
-    register: (name, phone, password) => api.post("/auth/register", { name, phone, password }),
-    login: (phone, password) => api.post("/auth/login", { phone, password }),
+    sendOTP: (email) => api.post("/auth/send-otp", { email }),
+    verifyOTP: (email, otp) => api.post("/auth/verify-otp", { email, otp }),
+    register: (name, email, password) => api.post("/auth/register", { name, email, password }),
+    login: (email, password) => api.post("/auth/login", { email, password }),
 };
 
 // User APIs

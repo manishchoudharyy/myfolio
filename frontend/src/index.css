@@ -2,107 +2,139 @@
 @import "tailwindcss";
 
 /* =========================================================
-   DESIGN TOKENS — SINGLE SOURCE OF TRUTH
+   MYFOLIO PREMIUM DESIGN SYSTEM (SaaS PRO MAX)
+   Aesthetic: Refined Minimalist Glass
    ========================================================= */
 
 @theme {
   /* ================= COLORS ================= */
+  /* Backgrounds - Strict Light Mode */
+  --color-bg: #FCFCFD;          /* ultra-refined off-white background */
+  --color-surface: #FFFFFF;     /* pure white for cards/panels */
+  
+  /* Brand Constants */
+  --color-primary: #0F172A;     /* sleek charcoal black for primary actions */
+  --color-primary-hover: #27272A;
+  
+  /* Accents */
+  --color-accent-blue: #2563EB; /* precise trust-blue */
+  --color-accent-indigo: #4F46E5;
+  --color-secondary: #FAFAFA;   /* subtle card highlights */
 
-  /* Backgrounds */
-  --color-bg: #F8FAFC;          /* app background */
-  --color-surface: #FFFFFF;     /* cards, panels */
+  /* Text Hierarchy */
+  --color-heading: #09090B;     /* almost black for stark contrast */
+  --color-body: #52525B;        /* readable zinc gray */
+  --color-muted: #A1A1AA;       /* quiet hint text */
 
-  /* Brand */
-  --color-primary: #2563EB;     /* main brand */
-  --color-primary-hover: #1D4ED8;
-  --color-secondary: #EEF2FF;   /* subtle highlights */
-
-  /* Text */
-  --color-heading: #0F172A;     /* headings */
-  --color-body: #475569;        /* paragraphs */
-  --color-muted: #94A3B8;       /* hints, labels */
-
-  /* Borders */
-  --color-border: #E2E8F0;
-
-  /* Status (future ready) */
-  --color-success: #16A34A;
-  --color-warning: #F59E0B;
-  --color-error: #DC2626;
+  /* Borders & Lines */
+  --color-border: #E4E4E7;      /* crisp, un-intrusive zinc border */
+  --color-border-hover: #D4D4D8;
 
   /* ================= TYPOGRAPHY ================= */
+  /* Premium Font Duo */
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-heading: "Outfit", "Inter", system-ui, sans-serif;
 
-  /* Font families */
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-heading: "Inter", system-ui, sans-serif;
-
-  /* Font sizes (scale based) */
-  --text-xs: 0.75rem;     /* 12px */
-  --text-sm: 0.875rem;    /* 14px */
-  --text-base: 1rem;      /* 16px */
-  --text-lg: 1.125rem;    /* 18px */
-  --text-xl: 1.25rem;     /* 20px */
-  --text-2xl: 1.5rem;     /* 24px */
-  --text-3xl: 1.875rem;   /* 30px */
-  --text-4xl: 2.25rem;    /* 36px */
-  --text-5xl: 3rem;       /* 48px */
-  --text-6xl: 3.75rem;    /* 60px */
-
+  /* Refined Scale */
+  --text-xs: 0.8125rem;    /* 13px */
+  --text-sm: 0.9375rem;    /* 15px */
+  --text-base: 1.0625rem;  /* 17px - ideal for readability */
+  --text-lg: 1.1875rem;    /* 19px */
+  --text-xl: 1.3125rem;    /* 21px */
+  --text-2xl: 1.75rem;     /* 28px */
+  --text-3xl: 2.25rem;     /* 36px */
+  --text-4xl: 3rem;        /* 48px */
+  --text-5xl: 4rem;        /* 64px */
+  --text-6xl: 5rem;        /* 80px */
+  
   /* ================= RADIUS ================= */
+  /* Apple-esque squircle emulation */
+  --radius-xs: 0.375rem;   /* 6px */
+  --radius-sm: 0.5rem;     /* 8px */
+  --radius-md: 0.75rem;    /* 12px */
+  --radius-lg: 1rem;       /* 16px */
+  --radius-xl: 1.5rem;     /* 24px */
+  --radius-2xl: 2rem;      /* 32px */
+  --radius-full: 9999px;
 
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-
-  /* ================= SHADOWS ================= */
-
-  --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.06);
-  --shadow-md: 0 6px 16px rgba(0,0,0,0.08);
-  --shadow-lg: 0 12px 30px rgba(0,0,0,0.12);
-
-  /* ================= SPACING ================= */
-
-  --space-section: 6rem;   /* landing sections */
-  --space-container: 1.25rem;
+  /* ================= SHADOWS (ELEVATION) ================= */
+  /* Custom crafted multi-layered optical shadows */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.03);
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.02);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.03);
+  --shadow-xl: 0 24px 48px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.04);
+  /* Intense shadow for floating elements like modals or nav */
+  --shadow-float: 0 32px 64px rgba(0,0,0,0.08), 0 16px 32px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.02);
 }
 
 /* =========================================================
-   BASE STYLES (GLOBAL)
+   BASE STYLES & resets
    ========================================================= */
-
 @layer base {
   html {
     font-family: var(--font-sans);
     background-color: var(--color-bg);
     color: var(--color-body);
+    scroll-behavior: smooth;
   }
 
   body {
     min-height: 100vh;
+    /* Optical typography tweaks */
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
+  /* Structural Type Hierarchy */
   h1, h2, h3, h4, h5, h6 {
     color: var(--color-heading);
     font-family: var(--font-heading);
     font-weight: 700;
-    line-height: 1.2;
+    letter-spacing: -0.02em; /* Tighter tracking for headings */
+    line-height: 1.1;
   }
 
+  h1 { letter-spacing: -0.03em; } /* Even tighter for hero text */
+  
   p {
-    line-height: 1.6;
+    line-height: 1.65;
+    letter-spacing: -0.01em;
   }
 }
 
 /* =========================================================
-   SCROLLBAR (CLEAN & MODERN)
+   PREMIUM CUSTOM UTILITIES (Utilities over components)
    ========================================================= */
+@layer utilities {
+  /* Subtle grain/noise overlay for high-end feel */
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  }
 
+  /* Vercel/Linear style soft ring */
+  .ring-subtle {
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04);
+  }
+  
+  /* Hover lift effect standard */
+  .hover-lift {
+    @apply transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg;
+  }
+
+  /* Glassmorphism panel standard */
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-xl ring-1 ring-black/5 shadow-lg;
+  }
+}
+
+/* =========================================================
+   SCROLLBAR & SELECTION
+   ========================================================= */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -110,15 +142,16 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--color-border);
-  border-radius: var(--radius-lg);
+  background-color: #E4E4E7;
+  border-radius: 9999px;
+  transition: background-color 0.2s;
 }
 
-/* =========================================================
-   SELECTION
-   ========================================================= */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #A1A1AA;
+}
 
 ::selection {
-  background-color: var(--color-primary);
+  background-color: var(--color-heading);
   color: white;
 }
