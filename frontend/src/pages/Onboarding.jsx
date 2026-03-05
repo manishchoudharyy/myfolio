@@ -147,7 +147,7 @@ const Onboarding = () => {
     };
 
     return (
-        <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-blue-50">
+        <div className="h-screen flex flex-col bg-slate-50">
             {/* Top bar with progress — shown on ALL steps */}
             <header className="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 shrink-0">
                 <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -174,12 +174,12 @@ const Onboarding = () => {
                                 <div key={ps.key} className="flex items-center gap-2">
                                     <div
                                         className={`w-2.5 h-2.5 rounded-full transition-colors ${i <= getProgressIdx()
-                                            ? "bg-blue-600"
+                                            ? "bg-slate-900"
                                             : "bg-slate-200"
                                             }`}
                                     />
                                     {i < progressSteps.length - 1 && (
-                                        <div className={`w-6 h-0.5 ${i < getProgressIdx() ? "bg-blue-600" : "bg-slate-200"}`} />
+                                        <div className={`w-6 h-0.5 ${i < getProgressIdx() ? "bg-slate-900" : "bg-slate-200"}`} />
                                     )}
                                 </div>
                             ))}

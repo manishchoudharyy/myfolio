@@ -167,14 +167,14 @@ const TemplateSelection = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-10 text-center"
                 >
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold mb-4">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 text-white text-[10px] uppercase font-bold tracking-widest mb-5 shadow-sm">
                         <Sparkles className="w-3.5 h-3.5" />
                         {myPortfolio ? "Switch Template" : "Step 1 of 2 — Choose Template"}
                     </div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
+                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 mb-3">
                         {myPortfolio ? "Pick a new look" : "Choose your template"}
                     </h1>
-                    <p className="text-slate-500 text-sm sm:text-base max-w-md mx-auto">
+                    <p className="text-slate-500 text-sm sm:text-base max-w-md mx-auto font-medium">
                         {myPortfolio
                             ? "Your content stays the same — only the design changes. Switch anytime."
                             : "Pick a design that matches your style. You can always switch it later."}
@@ -195,16 +195,15 @@ const TemplateSelection = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.07 }}
                                 whileHover={{ y: -4 }}
-                                whileTap={{ scale: 0.98 }}
                                 onClick={() => setSelected({ _id: template._id, slug: template.slug })}
-                                className={`relative text-left rounded-2xl border-2 overflow-hidden transition-all duration-200 shadow-sm ${isSelected
-                                        ? "border-blue-600 shadow-blue-100 shadow-lg"
-                                        : "border-slate-200 hover:border-slate-300 hover:shadow-md"
+                                className={`relative text-left rounded-3xl border-2 overflow-hidden transition-all duration-200 shadow-sm ${isSelected
+                                    ? "border-slate-900 shadow-xl scale-[1.01]"
+                                    : "border-slate-200 hover:border-slate-400 hover:shadow-md"
                                     }`}
                             >
                                 {/* Popular / Dark badge */}
                                 {cfg.tag && (
-                                    <div className={`absolute top-3 left-3 z-10 text-[10px] font-bold px-2.5 py-0.5 rounded-full ${cfg.badgeColor}`}>
+                                    <div className={`absolute top-4 left-4 z-10 text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wider ${cfg.badgeColor}`}>
                                         {cfg.tag}
                                     </div>
                                 )}
@@ -214,7 +213,7 @@ const TemplateSelection = () => {
                                     {isSelected && (
                                         <motion.div
                                             initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
-                                            className="absolute top-3 right-3 z-10 w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center shadow-md"
+                                            className="absolute top-4 right-4 z-10 w-7 h-7 bg-slate-900 rounded-full flex items-center justify-center shadow-md"
                                         >
                                             <Check className="w-4 h-4 text-white" />
                                         </motion.div>
@@ -229,23 +228,18 @@ const TemplateSelection = () => {
 
                                     {/* Ring highlight when active */}
                                     {isSelected && (
-                                        <div className="absolute inset-0 ring-2 ring-inset ring-blue-500/20 pointer-events-none" />
+                                        <div className="absolute inset-0 ring-4 ring-inset ring-slate-900/10 pointer-events-none" />
                                     )}
                                 </div>
 
                                 {/* Info */}
-                                <div className={`p-4 ${isDark ? "bg-gray-900" : "bg-white"}`}>
+                                <div className={`p-5 ${isDark ? "bg-gray-900" : "bg-white"}`}>
                                     <div className="flex items-center justify-between mb-1">
-                                        <h3 className={`font-bold text-base ${isDark ? "text-white" : "text-slate-900"}`}>
+                                        <h3 className={`font-bold text-lg tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
                                             {template.name}
                                         </h3>
-                                        {isSelected && (
-                                            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                                                Selected
-                                            </span>
-                                        )}
                                     </div>
-                                    <p className={`text-xs leading-relaxed ${isDark ? "text-gray-400" : "text-slate-500"}`}>
+                                    <p className={`text-xs font-medium leading-relaxed ${isDark ? "text-gray-400" : "text-slate-500"}`}>
                                         {template.description || cfg.tagline}
                                     </p>
                                 </div>
@@ -270,28 +264,26 @@ const TemplateSelection = () => {
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <button
                         onClick={() => navigate(myPortfolio ? "/edit" : "/dashboard")}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50 transition-colors"
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-200 text-slate-700 text-sm font-bold hover:bg-slate-50 transition-colors"
                     >
                         <ChevronLeft className="w-4 h-4" />
                         Back
                     </button>
 
-                    <motion.button
-                        whileHover={selected ? { scale: 1.03 } : {}}
-                        whileTap={selected ? { scale: 0.97 } : {}}
+                    <button
                         onClick={handleContinue}
                         disabled={!selected || submitting}
-                        className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-sm transition-all shadow-sm ${selected
-                                ? "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200/80 shadow-md"
-                                : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                        className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-sm transition-all focus:ring-4 focus:ring-slate-200 ${selected
+                            ? "bg-slate-900 hover:bg-slate-800 text-white shadow-md transform hover:-translate-y-0.5"
+                            : "bg-slate-200 text-slate-400 cursor-not-allowed opacity-60"
                             }`}
                     >
                         {submitting ? (
-                            <><Loader2 className="w-4 h-4 animate-spin" /> Creating portfolio…</>
+                            <><Loader2 className="w-4 h-4 animate-spin" /> Wait…</>
                         ) : (
                             <><CheckCircle2 className="w-4 h-4" /> {myPortfolio ? "Apply Template" : "Use this template"} <ArrowRight className="w-4 h-4" /></>
                         )}
-                    </motion.button>
+                    </button>
                 </div>
 
                 {/* Selection hint */}

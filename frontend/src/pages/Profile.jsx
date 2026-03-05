@@ -11,15 +11,15 @@ import { useAuth } from "../context/AuthContext";
 import { userAPI } from "../services/api";
 
 // ─── Section card wrapper ───────────────────────────────────────────
-const Card = ({ title, icon: Icon, iconColor = "text-blue-600", iconBg = "bg-blue-50", children }) => (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-            <div className={`w-8 h-8 rounded-lg ${iconBg} flex items-center justify-center`}>
-                <Icon className={`w-4 h-4 ${iconColor}`} />
+const Card = ({ title, icon: Icon, children }) => (
+    <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+        <div className="px-6 py-5 border-b border-slate-100 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center">
+                <Icon className="w-4 h-4 text-slate-500" />
             </div>
-            <h2 className="font-semibold text-slate-900">{title}</h2>
+            <h2 className="font-bold text-slate-900 tracking-tight">{title}</h2>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="p-6 sm:p-8">{children}</div>
     </div>
 );
 
@@ -139,19 +139,19 @@ const Profile = () => {
     };
 
     const PwField = ({ label, field, value, onChange }) => (
-        <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">{label}</label>
+        <div className="mb-4">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">{label}</label>
             <div className="relative">
                 <input
                     type={showPw[field] ? "text" : "password"}
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
-                    className="w-full px-4 py-2.5 pr-10 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-xl text-sm text-slate-900 focus:bg-white focus:border-slate-300 focus:outline-none focus:ring-4 focus:ring-slate-100 transition-all pr-10"
                     placeholder="••••••••"
                 />
                 <button type="button"
                     onClick={() => setShowPw((p) => ({ ...p, [field]: !p[field] }))}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
                     {showPw[field] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
             </div>
@@ -159,13 +159,13 @@ const Profile = () => {
     );
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+        <div className="min-h-screen bg-slate-50 flex flex-col">
             <DashboardNav />
 
-            <main className="max-w-2xl mx-auto px-4 sm:px-6 py-10 space-y-6">
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-2">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Profile</h1>
-                    <p className="text-slate-500 mt-1 text-sm">Manage your account details and preferences.</p>
+            <main className="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 py-10 pb-24">
+                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+                    <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Account Settings</h1>
+                    <p className="text-slate-500 mt-1 text-sm font-medium">Manage your personal information and preferences.</p>
                 </motion.div>
 
                 {/* ── 1. Personal Info ── */}
@@ -174,85 +174,90 @@ const Profile = () => {
                         <Msg type={profileMsg.type} text={profileMsg.text} />
 
                         {/* Avatar */}
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-6">
+                        <div className="flex flex-col sm:flex-row items-center gap-6 mb-8 pb-8 border-b border-slate-100">
                             <ImageUpload
                                 value={avatarUrl}
                                 onChange={setAvatarUrl}
                                 shape="circle"
                                 placeholder="Upload Photo"
                             />
-                            <div>
-                                <p className="font-medium text-slate-800 text-sm">Profile Photo</p>
-                                <p className="text-xs text-slate-400 mt-1">JPG, PNG or WebP · Max 5 MB</p>
-                                <p className="text-xs text-slate-400">Shown on your portfolio.</p>
+                            <div className="text-center sm:text-left">
+                                <p className="font-bold text-slate-900 text-sm">Profile Photo</p>
+                                <p className="text-sm text-slate-500 mt-1">Recommended size 400x400px. <br className="hidden sm:block" />JPG, PNG or WebP under 5 MB.</p>
                             </div>
                         </div>
 
                         {/* Name */}
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                        <div className="mb-5">
+                            <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Full Name</label>
                             <input
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-xl text-sm text-slate-900 focus:bg-white focus:border-slate-300 focus:outline-none focus:ring-4 focus:ring-slate-100 transition-all font-medium"
                                 placeholder="Your full name"
                             />
                         </div>
 
                         {/* Email / Phone — read only */}
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-slate-700 mb-1">
-                                {user?.email ? "Email" : "Phone"}
+                        <div className="mb-8">
+                            <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">
+                                {user?.email ? "Email Address" : "Phone Number"}
                             </label>
-                            <div className="w-full px-4 py-2.5 border border-slate-100 rounded-xl text-sm bg-slate-50 text-slate-400 flex items-center justify-between">
+                            <div className="w-full px-4 py-3 bg-slate-50/50 border border-slate-100 rounded-xl text-sm text-slate-500 flex items-center justify-between font-medium cursor-not-allowed">
                                 <span>{user?.email || user?.phone || "—"}</span>
-                                <span className="text-xs bg-slate-200 text-slate-500 px-2 py-0.5 rounded-full">
-                                    {isGoogleUser ? "Google account" : "Read-only"}
+                                <span className="text-[10px] bg-slate-200 text-slate-600 px-2 py-1 rounded-md font-bold tracking-wider uppercase">
+                                    {isGoogleUser ? "Google Auth" : "Read-only"}
                                 </span>
                             </div>
                         </div>
 
-                        <button onClick={handleSaveProfile} disabled={profileSaving}
-                            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-60 transition-colors shadow-sm">
-                            {profileSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                            {profileSaving ? "Saving..." : "Save Changes"}
-                        </button>
+                        <div className="flex justify-end">
+                            <button onClick={handleSaveProfile} disabled={profileSaving}
+                                className="flex items-center justify-center w-full sm:w-auto gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-slate-800 disabled:opacity-60 transition-all shadow-sm focus:ring-4 focus:ring-slate-200">
+                                {profileSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                {profileSaving ? "Saving..." : "Save Changes"}
+                            </button>
+                        </div>
                     </Card>
                 </motion.div>
 
                 {/* ── 2. Change Password (phone users only) ── */}
                 {!isGoogleUser && (
                     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                        <Card title="Change Password" icon={Lock} iconColor="text-violet-600" iconBg="bg-violet-50">
+                        <Card title="Change Password" icon={Lock}>
                             <Msg type={pwMsg.type} text={pwMsg.text} />
-                            <div className="space-y-4">
+                            <div className="space-y-1 mb-8">
                                 <PwField label="Current Password" field="current" value={currentPw} onChange={setCurrentPw} />
-                                <PwField label="New Password" field="new" value={newPw} onChange={setNewPw} />
-                                <PwField label="Confirm Password" field="confirm" value={confirmPw} onChange={setConfirmPw} />
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <PwField label="New Password" field="new" value={newPw} onChange={setNewPw} />
+                                    <PwField label="Confirm Password" field="confirm" value={confirmPw} onChange={setConfirmPw} />
+                                </div>
                             </div>
-                            <button onClick={handleChangePassword} disabled={pwSaving}
-                                className="mt-5 flex items-center gap-2 px-5 py-2.5 bg-violet-600 text-white rounded-xl text-sm font-medium hover:bg-violet-700 disabled:opacity-60 transition-colors shadow-sm">
-                                {pwSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
-                                {pwSaving ? "Saving..." : "Update Password"}
-                            </button>
+                            <div className="flex justify-end">
+                                <button onClick={handleChangePassword} disabled={pwSaving}
+                                    className="flex items-center justify-center w-full sm:w-auto gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-slate-800 disabled:opacity-60 transition-all shadow-sm focus:ring-4 focus:ring-slate-200">
+                                    {pwSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+                                    {pwSaving ? "Changing..." : "Update Password"}
+                                </button>
+                            </div>
                         </Card>
                     </motion.div>
                 )}
 
                 {/* ── 3. Danger Zone ── */}
                 <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-                    <Card title="Danger Zone" icon={ShieldAlert} iconColor="text-red-600" iconBg="bg-red-50">
-                        <div className="flex items-start justify-between gap-4">
+                    <Card title="Danger Zone" icon={ShieldAlert}>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
                             <div>
-                                <p className="font-medium text-slate-800 text-sm">Delete Portfolio</p>
-                                <p className="text-xs text-slate-400 mt-1">
-                                    Permanently removes your portfolio and all its content. Cannot be undone.
+                                <p className="font-bold text-slate-900 text-sm">Delete Portfolio</p>
+                                <p className="text-sm font-medium text-slate-500 mt-1 max-w-sm">
+                                    Permanently removes your portfolio and all its contents from our servers. This action is irreversible.
                                 </p>
                             </div>
                             <button onClick={() => setShowDeleteConfirm(true)}
-                                className="shrink-0 flex items-center gap-2 px-4 py-2 border border-red-200 text-red-600 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors">
-                                <Trash2 className="w-4 h-4" /> Delete
+                                className="shrink-0 flex items-center justify-center w-full sm:w-auto gap-2 px-5 py-2.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-xl text-sm font-bold transition-all focus:ring-4 focus:ring-red-100">
+                                <Trash2 className="w-4 h-4" /> Delete Portfolio
                             </button>
                         </div>
                     </Card>
@@ -261,32 +266,33 @@ const Profile = () => {
 
             {/* ── Delete Portfolio Modal ── */}
             {showDeleteConfirm && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4"
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
                     onClick={() => { setShowDeleteConfirm(false); setDeleteInput(""); }}>
-                    <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                    <motion.div initial={{ scale: 0.95, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
-                        <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        className="bg-white rounded-3xl shadow-xl border border-slate-100 p-6 sm:p-8 w-full max-w-sm relative">
+                        <div className="absolute top-0 right-0 -m-8 w-32 h-32 bg-red-500/10 rounded-full blur-2xl pointer-events-none" />
+
+                        <div className="w-12 h-12 bg-red-50 border border-red-100 rounded-xl flex items-center justify-center mb-5">
                             <Trash2 className="w-6 h-6 text-red-600" />
                         </div>
-                        <h3 className="text-lg font-bold text-center text-slate-900 mb-1">Delete Portfolio?</h3>
-                        <p className="text-sm text-center text-slate-500 mb-5">
-                            This will permanently delete your portfolio. Type{" "}
-                            <span className="font-mono font-bold text-red-600">DELETE</span> to confirm.
+                        <h3 className="text-xl font-bold text-slate-900 mb-2">Delete Portfolio?</h3>
+                        <p className="text-sm font-medium text-slate-500 mb-6">
+                            This will permanently delete your portfolio. Type <span className="font-mono font-bold text-red-600 select-all tracking-wider bg-red-50 px-1 py-0.5 rounded">DELETE</span> to confirm.
                         </p>
                         <input type="text" value={deleteInput} onChange={(e) => setDeleteInput(e.target.value)}
-                            placeholder='Type "DELETE" to confirm'
-                            className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-center mb-4 focus:outline-none focus:ring-2 focus:ring-red-400" />
+                            placeholder='Type "DELETE"'
+                            className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-xl text-sm text-center mb-6 focus:bg-white focus:border-red-300 focus:outline-none focus:ring-4 focus:ring-red-100 transition-all font-bold placeholder-slate-400" />
                         <div className="flex gap-3">
                             <button onClick={() => { setShowDeleteConfirm(false); setDeleteInput(""); }}
-                                className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50">
+                                className="flex-1 px-4 py-3 border border-slate-200 bg-white rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors">
                                 Cancel
                             </button>
                             <button onClick={handleDeletePortfolio}
                                 disabled={deleteInput !== "DELETE" || deleting}
-                                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed">
+                                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700 disabled:opacity-50 disabled:bg-red-600 disabled:cursor-not-allowed transition-all focus:ring-4 focus:ring-red-200">
                                 {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                                {deleting ? "Deleting..." : "Yes, Delete"}
+                                {deleting ? "Wait..." : "Delete"}
                             </button>
                         </div>
                     </motion.div>

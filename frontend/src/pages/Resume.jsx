@@ -131,8 +131,8 @@ const Resume = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-8"
                 >
-                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Resume</h1>
-                    <p className="text-slate-500 mt-1 text-sm sm:text-base">
+                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900">Resume</h1>
+                    <p className="text-slate-500 mt-2 font-medium text-sm sm:text-base">
                         Keep your base resume updated here. We use it as the source of truth for AI generation.
                     </p>
                 </motion.div>
@@ -192,36 +192,36 @@ const Resume = () => {
                                 onDragLeave={() => setDragOver(false)}
                                 className={`relative p-10 sm:p-14 text-center cursor-pointer transition-all duration-300
                                     ${dragOver
-                                        ? "bg-blue-50/80"
+                                        ? "bg-slate-50"
                                         : "bg-white hover:bg-slate-50"
                                     }`}
                             >
-                                <div className={`absolute inset-4 rounded-2xl border-2 border-dashed transition-colors duration-300 pointer-events-none ${dragOver ? "border-blue-400" : "border-slate-200"}`} />
+                                <div className={`absolute inset-4 rounded-3xl border-2 border-dashed transition-colors duration-300 pointer-events-none ${dragOver ? "border-slate-900" : "border-slate-200"}`} />
 
                                 {uploading ? (
                                     <div className="flex flex-col items-center gap-5 relative z-10">
-                                        <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center shadow-inner">
-                                            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                                        <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center shadow-inner">
+                                            <Loader2 className="w-8 h-8 text-white animate-spin" />
                                         </div>
                                         <div>
-                                            <p className="font-bold text-slate-800 text-lg">Parsing your PDF...</p>
-                                            <p className="text-sm text-slate-500 mt-1">Extracting skills, experience, and projects</p>
+                                            <p className="font-bold text-slate-900 text-lg">Parsing your PDF...</p>
+                                            <p className="text-sm text-slate-500 font-medium mt-1">Extracting skills, experience, and projects</p>
                                         </div>
                                     </div>
                                 ) : (
                                     <div className="flex flex-col items-center gap-5 relative z-10">
                                         <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors shadow-sm
-                                            ${dragOver ? "bg-blue-600 shadow-blue-200" : "bg-blue-50"}`}>
-                                            <CloudUpload className={`w-7 h-7 transition-colors ${dragOver ? "text-white" : "text-blue-600"}`} />
+                                            ${dragOver ? "bg-slate-900 shadow-md" : "bg-slate-100"}`}>
+                                            <CloudUpload className={`w-7 h-7 transition-colors ${dragOver ? "text-white" : "text-slate-500"}`} />
                                         </div>
                                         <div>
-                                            <p className="font-bold text-slate-900 text-xl sm:text-2xl mb-2">
+                                            <p className="font-bold text-slate-900 tracking-tight text-xl sm:text-2xl mb-2">
                                                 {dragOver ? "Drop it!" : "Upload your resume"}
                                             </p>
-                                            <p className="text-sm text-slate-500">
-                                                Drag & drop your file here, or <span className="text-blue-600 font-semibold hover:underline">browse</span>
+                                            <p className="text-sm font-medium text-slate-500">
+                                                Drag & drop your file here, or <span className="text-slate-900 font-bold hover:underline">browse</span>
                                             </p>
-                                            <p className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">
+                                            <p className="text-[10px] text-slate-400 mt-2 uppercase tracking-wider font-bold">
                                                 PDF only · Max 10MB
                                             </p>
                                         </div>
@@ -241,20 +241,20 @@ const Resume = () => {
                             className="space-y-6"
                         >
                             {/* Main Resume Card */}
-                            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5">
-                                    <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-inner shrink-0 text-white font-bold text-xl uppercase border border-white/20">
+                            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+                                <div className="bg-slate-900 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5">
+                                    <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-inner shrink-0 text-white font-black text-xl border border-white/5">
                                         PDF
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-bold text-white text-lg sm:text-xl truncate leading-tight mb-1">
+                                        <p className="font-bold text-white text-lg sm:text-xl truncate tracking-tight leading-tight mb-1">
                                             {resume.name}
                                         </p>
-                                        <div className="flex items-center gap-3 text-blue-200 text-xs font-medium">
-                                            <span className="flex items-center gap-1">
-                                                <CheckCircle2 className="w-3.5 h-3.5" /> Parsed successfully
+                                        <div className="flex items-center gap-3 text-slate-400 text-[11px] font-bold uppercase tracking-wider">
+                                            <span className="flex items-center gap-1.5 text-green-400">
+                                                <CheckCircle2 className="w-3.5 h-3.5" /> Parsed
                                             </span>
-                                            <span className="w-1 h-1 bg-blue-300 rounded-full" />
+                                            <span className="w-1 h-1 bg-slate-600 rounded-full" />
                                             <span>
                                                 {/* If backend returns bytes, format it. If it returns string like '1.2MB' use it directly */}
                                                 {typeof resume.size === 'number' ? formatBytes(resume.size) : resume.size || "Unknown size"}
@@ -273,14 +273,14 @@ const Resume = () => {
                                             href={resume.url}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors shadow-sm"
+                                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-colors shadow-sm focus:ring-4 focus:ring-slate-200"
                                         >
                                             <Eye className="w-4 h-4 shrink-0" /> <span className="truncate">View File</span>
                                         </a>
                                         <button
                                             onClick={() => inputRef.current?.click()}
                                             disabled={uploading}
-                                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 border border-slate-200 text-slate-700 bg-white rounded-xl text-sm font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all disabled:opacity-50"
+                                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 border border-slate-200 text-slate-700 bg-white rounded-xl text-sm font-bold hover:bg-slate-50 transition-all disabled:opacity-50"
                                         >
                                             {uploading ? <Loader2 className="w-4 h-4 animate-spin shrink-0" /> : <RefreshCw className="w-4 h-4 shrink-0" />}
                                             <span className="truncate">{uploading ? "Replacing..." : "Replace"}</span>
@@ -295,7 +295,7 @@ const Resume = () => {
                                         </a>
                                         <button
                                             onClick={() => setShowDeleteConfirm(true)}
-                                            className="w-11 h-11 flex items-center justify-center border border-red-100 text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-all shrink-0 sm:ml-auto"
+                                            className="w-11 h-11 flex items-center justify-center border border-red-200 text-red-600 bg-white rounded-xl hover:bg-red-50 hover:text-red-700 transition-all shrink-0 sm:ml-auto"
                                             title="Delete permanently"
                                         >
                                             <Trash2 className="w-4 h-4" />
@@ -305,21 +305,21 @@ const Resume = () => {
                             </div>
 
                             {/* Re-parse nudge (More contextual flow) */}
-                            <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row gap-5 items-start sm:items-center shadow-sm">
-                                <div className="w-12 h-12 bg-violet-100 rounded-xl flex items-center justify-center shrink-0">
-                                    <Sparkles className="w-6 h-6 text-violet-600" />
+                            <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row gap-5 items-start sm:items-center shadow-sm">
+                                <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center shrink-0">
+                                    <Sparkles className="w-5 h-5 text-slate-900" />
                                 </div>
                                 <div className="flex-1">
-                                    <h3 className="text-base font-bold text-slate-900 mb-1">
+                                    <h3 className="text-base font-bold tracking-tight text-slate-900 mb-1">
                                         Update your portfolio?
                                     </h3>
-                                    <p className="text-sm text-slate-500 leading-relaxed">
-                                        If you've replaced your resume, you can let our AI re-read it to update your portfolio sections instantly without typing.
+                                    <p className="text-sm font-medium text-slate-500 leading-relaxed max-w-lg">
+                                        If you've replaced your resume, let AI re-read it to update your portfolio sections instantly without typing.
                                     </p>
                                 </div>
                                 <button
                                     onClick={() => navigate("/onboarding")}
-                                    className="w-full sm:w-auto px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"
+                                    className="w-full sm:w-auto px-6 py-3 bg-slate-900 hover:bg-slate-800 focus:ring-4 focus:ring-slate-200 text-white text-sm font-bold rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"
                                 >
                                     <FilePlus2 className="w-4 h-4" /> Re-build Portfolio
                                 </button>
