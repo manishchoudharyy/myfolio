@@ -1,5 +1,7 @@
 import React from "react";
-import { Mail, Phone, Linkedin, Github, Twitter, Globe, ExternalLink, MapPin } from "lucide-react";
+import { Mail, Phone, Linkedin, Github, Twitter, Globe, ExternalLink } from "lucide-react";
+import SkillIcon from "./shared/SkillIcon";
+import { sanitizeUrl } from "../utils/sanitize";
 
 const FresherTemplate = ({ data }) => {
     console.log("It's Rendering");
@@ -94,26 +96,17 @@ const FresherTemplate = ({ data }) => {
                                     Skills
                                 </span>
                             </h2>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
-                                {data.skills.map((skill, i) => {
-                                    const levelMap = { "Beginner": 30, "Intermediate": 55, "Advanced": 80, "Expert": 95 };
-                                    const level = levelMap[skill.level] || 60;
-                                    return (
-                                        <div
-                                            key={i}
-                                            className="bg-gray-800/50 p-6 rounded-2xl border border-gray-700 hover:border-blue-500/50 transition-all group"
-                                        >
-                                            <h3 className="font-semibold text-lg mb-3">{skill.name}</h3>
-                                            <div className="w-full bg-gray-700 rounded-full h-2">
-                                                <div
-                                                    className="bg-gradient-to-r from-blue-500 to-teal-400 h-2 rounded-full transition-all"
-                                                    style={{ width: `${level}%` }}
-                                                ></div>
-                                            </div>
-                                            <p className="text-xs text-gray-500 mt-2">{skill.level || "Intermediate"}</p>
-                                        </div>
-                                    );
-                                })}
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                                {data.skills.map((skill, i) => (
+                                    <div
+                                        key={i}
+                                        className="bg-gray-800/50 p-5 rounded-2xl border border-gray-700 hover:border-blue-500/50 transition-all group flex flex-col items-center gap-3 text-center"
+                                    >
+                                        <SkillIcon name={skill.name} size={36} />
+                                        <h3 className="font-semibold text-sm">{skill.name}</h3>
+                                        <span className="text-xs text-gray-500 bg-gray-700/60 px-2 py-0.5 rounded-full">{skill.level || "Intermediate"}</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </section>
@@ -192,47 +185,46 @@ const FresherTemplate = ({ data }) => {
                                 {data.projects.map((project, i) => (
                                     <div
                                         key={i}
-                                        className="bg-gray-800/30 rounded-2xl border border-gray-700 p-6 hover:border-blue-500/50 transition-all group"
+                                        className="bg-gray-800/30 rounded-2xl border border-gray-700 overflow-hidden hover:border-blue-500/50 transition-all group"
                                     >
-                                        <h3 className="text-xl font-semibold mb-2 text-white">
-                                            {project.title}
-                                        </h3>
-                                        {project.description && (
-                                            <p className="text-gray-400 text-sm mb-4">{project.description}</p>
-                                        )}
-                                        {project.techStack?.length > 0 && (
-                                            <div className="flex flex-wrap gap-2 mb-5">
-                                                {project.techStack.map((t, j) => (
-                                                    <span
-                                                        key={j}
-                                                        className="text-xs bg-gray-700 text-gray-300 px-3 py-1 rounded-full"
-                                                    >
-                                                        {t}
-                                                    </span>
-                                                ))}
+                                        {/* Project image */}
+                                        {project.image ? (
+                                            <img
+                                                src={project.image}
+                                                alt={project.title}
+                                                className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-44 bg-gradient-to-br from-blue-900/40 to-teal-900/40 flex items-center justify-center text-4xl border-b border-gray-700">
+                                                🚀
                                             </div>
                                         )}
-                                        <div className="flex gap-4 items-center">
-                                            {project.liveUrl && (
-                                                <a
-                                                    href={project.liveUrl}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    className="text-blue-400 text-sm font-medium hover:text-blue-300 flex items-center gap-1"
-                                                >
-                                                    <ExternalLink className="w-3.5 h-3.5" /> Live Preview
-                                                </a>
+                                        <div className="p-5">
+                                            <h3 className="text-lg font-semibold mb-1 text-white">{project.title}</h3>
+                                            {project.description && (
+                                                <p className="text-gray-400 text-sm mb-3 line-clamp-2">{project.description}</p>
                                             )}
-                                            {project.githubUrl && (
-                                                <a
-                                                    href={project.githubUrl}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    className="text-gray-400 text-sm font-medium hover:text-gray-300 flex items-center gap-1"
-                                                >
-                                                    <Github className="w-3.5 h-3.5" /> Source
-                                                </a>
+                                            {project.techStack?.length > 0 && (
+                                                <div className="flex flex-wrap gap-1.5 mb-4">
+                                                    {project.techStack.map((t, j) => (
+                                                        <span key={j} className="text-xs bg-gray-700 text-gray-300 px-2.5 py-0.5 rounded-full">{t}</span>
+                                                    ))}
+                                                </div>
                                             )}
+                                            <div className="flex gap-4 items-center">
+                                                {project.liveUrl && (
+                                                    <a href={sanitizeUrl(project.liveUrl)} target="_blank" rel="noreferrer"
+                                                        className="text-blue-400 text-sm font-medium hover:text-blue-300 flex items-center gap-1">
+                                                        <ExternalLink className="w-3.5 h-3.5" /> Live
+                                                    </a>
+                                                )}
+                                                {project.githubUrl && (
+                                                    <a href={sanitizeUrl(project.githubUrl)} target="_blank" rel="noreferrer"
+                                                        className="text-gray-400 text-sm font-medium hover:text-gray-300 flex items-center gap-1">
+                                                        <Github className="w-3.5 h-3.5" /> Source
+                                                    </a>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
@@ -262,7 +254,7 @@ const FresherTemplate = ({ data }) => {
                                         <p className="text-sm text-gray-500">{cert.date}</p>
                                         {cert.url && (
                                             <a
-                                                href={cert.url}
+                                                href={sanitizeUrl(cert.url)}
                                                 target="_blank"
                                                 rel="noreferrer"
                                                 className="text-sm text-teal-400 hover:text-teal-300 mt-2 inline-flex items-center gap-1"
@@ -316,25 +308,25 @@ const FresherTemplate = ({ data }) => {
                             </div>
                             <div className="flex justify-center gap-4 mt-8">
                                 {data.contact.github && (
-                                    <a href={data.contact.github} target="_blank" rel="noreferrer"
+                                    <a href={sanitizeUrl(data.contact.github)} target="_blank" rel="noreferrer"
                                         className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors border border-gray-700">
                                         <Github className="w-5 h-5" />
                                     </a>
                                 )}
                                 {data.contact.linkedin && (
-                                    <a href={data.contact.linkedin} target="_blank" rel="noreferrer"
+                                    <a href={sanitizeUrl(data.contact.linkedin)} target="_blank" rel="noreferrer"
                                         className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors border border-gray-700">
                                         <Linkedin className="w-5 h-5" />
                                     </a>
                                 )}
                                 {data.contact.twitter && (
-                                    <a href={data.contact.twitter} target="_blank" rel="noreferrer"
+                                    <a href={sanitizeUrl(data.contact.twitter)} target="_blank" rel="noreferrer"
                                         className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors border border-gray-700">
                                         <Twitter className="w-5 h-5" />
                                     </a>
                                 )}
                                 {data.contact.website && (
-                                    <a href={data.contact.website} target="_blank" rel="noreferrer"
+                                    <a href={sanitizeUrl(data.contact.website)} target="_blank" rel="noreferrer"
                                         className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors border border-gray-700">
                                         <Globe className="w-5 h-5" />
                                     </a>

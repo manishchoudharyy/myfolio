@@ -1,6 +1,7 @@
 import React from "react";
 import { Mail, Phone, Linkedin, Github, Twitter, Globe, ExternalLink } from "lucide-react";
 import ContactBadge from "./shared/ContactBadge";
+import { sanitizeUrl } from "../utils/sanitize";
 
 const ModernTemplate = ({ data }) => (
     <div className="min-h-full bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 text-white p-6 sm:p-8 font-sans">
@@ -65,8 +66,8 @@ const ModernTemplate = ({ data }) => (
                             <div className="flex items-center justify-between">
                                 <h3 className="font-semibold text-sm">{project.title}</h3>
                                 <div className="flex gap-2">
-                                    {project.liveUrl && <a href={project.liveUrl} target="_blank" rel="noreferrer" className="text-indigo-400 hover:text-indigo-300"><ExternalLink className="w-3 h-3" /></a>}
-                                    {project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noreferrer" className="text-slate-400 hover:text-slate-300"><Github className="w-3 h-3" /></a>}
+                                    {project.liveUrl && <a href={sanitizeUrl(project.liveUrl)} target="_blank" rel="noreferrer" className="text-indigo-400 hover:text-indigo-300"><ExternalLink className="w-3 h-3" /></a>}
+                                    {project.githubUrl && <a href={sanitizeUrl(project.githubUrl)} target="_blank" rel="noreferrer" className="text-slate-400 hover:text-slate-300"><Github className="w-3 h-3" /></a>}
                                 </div>
                             </div>
                             {project.description && <p className="text-xs text-slate-400 mt-1">{project.description}</p>}

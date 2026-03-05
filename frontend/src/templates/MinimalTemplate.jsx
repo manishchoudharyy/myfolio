@@ -1,6 +1,7 @@
 import React from "react";
 import { Mail, Phone, Linkedin, Github, Twitter, Globe, ExternalLink } from "lucide-react";
 import ContactBadge from "./shared/ContactBadge";
+import { sanitizeUrl } from "../utils/sanitize";
 
 const MinimalTemplate = ({ data }) => (
     <div className="min-h-full bg-white p-6 sm:p-8 font-sans">
@@ -69,12 +70,12 @@ const MinimalTemplate = ({ data }) => (
                             <h3 className="font-semibold text-slate-900 text-sm">{project.title}</h3>
                             <div className="flex gap-2">
                                 {project.liveUrl && (
-                                    <a href={project.liveUrl} target="_blank" rel="noreferrer" className="text-blue-600">
+                                    <a href={sanitizeUrl(project.liveUrl)} target="_blank" rel="noreferrer" className="text-blue-600">
                                         <ExternalLink className="w-3 h-3" />
                                     </a>
                                 )}
                                 {project.githubUrl && (
-                                    <a href={project.githubUrl} target="_blank" rel="noreferrer" className="text-slate-600">
+                                    <a href={sanitizeUrl(project.githubUrl)} target="_blank" rel="noreferrer" className="text-slate-600">
                                         <Github className="w-3 h-3" />
                                     </a>
                                 )}
