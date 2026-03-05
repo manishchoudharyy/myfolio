@@ -39,8 +39,8 @@ const ChatContent = memo(({
     <div className="flex flex-col h-full">
 
         {/* Header */}
-        <div className="px-4 py-3.5 border-b border-slate-100 flex items-center gap-3 shrink-0">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center shrink-0">
+        <div className="px-4 py-4 border-b border-slate-100 flex items-center gap-3 shrink-0 shadow-sm">
+            <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center shrink-0">
                 <Sparkles className="w-4 h-4 text-white" />
             </div>
             <div className="flex-1 min-w-0">
@@ -67,18 +67,18 @@ const ChatContent = memo(({
                         transition={{ duration: 0.2 }}
                         className={`flex items-end gap-2 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}
                     >
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${msg.role === "user"
-                            ? "bg-slate-200"
-                            : "bg-gradient-to-br from-violet-500 to-purple-700"
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm ${msg.role === "user"
+                            ? "bg-slate-100 border border-slate-200"
+                            : "bg-slate-900"
                             }`}>
                             {msg.role === "user"
-                                ? <User className="w-3 h-3 text-slate-500" />
-                                : <Bot className="w-3 h-3 text-white" />
+                                ? <User className="w-4 h-4 text-slate-600" />
+                                : <Bot className="w-4 h-4 text-white" />
                             }
                         </div>
-                        <div className={`max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm ${msg.role === "user"
-                            ? "bg-blue-600 text-white rounded-br-sm"
-                            : "bg-white text-slate-800 rounded-bl-sm border border-slate-100"
+                        <div className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${msg.role === "user"
+                            ? "bg-slate-900 text-white rounded-br-sm"
+                            : "bg-white text-slate-800 rounded-bl-sm border border-slate-200"
                             }`}>
                             {msg.content}
                         </div>
@@ -86,16 +86,15 @@ const ChatContent = memo(({
                 ))}
             </AnimatePresence>
 
-            {/* Typing */}
             {sending && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-end gap-2">
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center shrink-0">
-                        <Bot className="w-3 h-3 text-white" />
+                    <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center shrink-0 shadow-sm">
+                        <Bot className="w-4 h-4 text-white" />
                     </div>
-                    <div className="bg-white border border-slate-100 rounded-2xl rounded-bl-sm px-3.5 py-2.5 shadow-sm">
-                        <div className="flex gap-1">
+                    <div className="bg-white border border-slate-200 rounded-2xl rounded-bl-sm px-4 py-3.5 shadow-sm">
+                        <div className="flex gap-1.5">
                             {[0, 150, 300].map((d) => (
-                                <div key={d} className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />
+                                <div key={d} className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />
                             ))}
                         </div>
                     </div>
@@ -129,7 +128,7 @@ const ChatContent = memo(({
                         key={p}
                         onClick={() => onQuickPrompt(p)}
                         disabled={sending}
-                        className="text-[11px] text-slate-500 bg-slate-100 hover:bg-violet-50 hover:text-violet-700 border border-transparent hover:border-violet-200 px-2.5 py-1 rounded-full whitespace-nowrap transition-colors disabled:opacity-40"
+                        className="text-[11px] text-slate-600 font-medium bg-slate-50 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 px-3 py-1.5 rounded-full whitespace-nowrap transition-colors disabled:opacity-40"
                     >
                         {p}
                     </button>
@@ -138,8 +137,8 @@ const ChatContent = memo(({
         </div>
 
         {/* Input */}
-        <div className="px-4 pb-3 pt-1 shrink-0 space-y-2">
-            <form onSubmit={onSubmit} className="flex items-center gap-2">
+        <div className="px-4 pb-4 pt-2 shrink-0 space-y-3 border-t border-slate-100 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
+            <form onSubmit={onSubmit} className="flex items-center gap-2.5">
                 <input
                     ref={inputRef}
                     type="text"
@@ -147,26 +146,22 @@ const ChatContent = memo(({
                     onChange={(e) => setInput(e.target.value)}
                     disabled={sending}
                     placeholder="e.g., Make my about more professional..."
-                    className="flex-1 px-3.5 py-2.5 bg-slate-50 rounded-xl text-sm border border-slate-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 focus:outline-none transition-all disabled:opacity-50"
+                    className="flex-1 px-4 py-3 bg-slate-50 focus:bg-white rounded-xl text-sm border border-slate-200 focus:border-slate-300 focus:ring-4 focus:ring-slate-100 focus:outline-none transition-all disabled:opacity-50"
                 />
-                <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                <button
                     type="submit"
                     disabled={!input.trim() || sending}
-                    className="w-10 h-10 bg-violet-600 text-white rounded-xl flex items-center justify-center hover:bg-violet-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                    className="w-11 h-11 bg-slate-900 text-white rounded-xl flex items-center justify-center hover:bg-slate-800 transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0 focus:ring-4 focus:ring-slate-200"
                 >
-                    {sending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Wand2 className="w-3.5 h-3.5" />}
-                </motion.button>
+                    {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
+                </button>
             </form>
 
-            <motion.button
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.98 }}
+            <button
                 onClick={onPublish}
-                className={`w-full py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${isExistingPortfolio
-                    ? "bg-slate-800 hover:bg-slate-900 text-white shadow-sm hover:shadow-md"
-                    : "bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md shadow-green-200 hover:shadow-lg hover:from-green-600 hover:to-emerald-700"
+                className={`w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all focus:ring-4 focus:ring-slate-200 ${isExistingPortfolio
+                    ? "bg-slate-900 border border-slate-800 hover:bg-slate-800 text-white shadow-sm"
+                    : "bg-slate-900 hover:bg-slate-800 text-white shadow-md transform hover:-translate-y-0.5"
                     }`}
             >
                 {isExistingPortfolio ? (
@@ -178,7 +173,7 @@ const ChatContent = memo(({
                         <Check className="w-4 h-4" /> Publish Portfolio
                     </>
                 )}
-            </motion.button>
+            </button>
         </div>
     </div>
 ));
@@ -299,9 +294,9 @@ const PreviewRefine = ({
                         <button
                             key={tab.id}
                             onClick={() => setMobileTab(tab.id)}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-sm font-medium border-b-2 transition-colors ${mobileTab === tab.id
-                                ? "text-blue-600 border-blue-600"
-                                : "text-slate-400 border-transparent"
+                            className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-bold border-b-2 transition-colors ${mobileTab === tab.id
+                                ? "text-slate-900 border-slate-900"
+                                : "text-slate-400 border-transparent hover:text-slate-600"
                                 }`}
                         >
                             <tab.icon className="w-4 h-4" />

@@ -100,30 +100,30 @@ const AIChat = ({ sessionId, collectedData, onSessionId, onDataUpdate, onComplet
                 {/* Header */}
                 <div className="px-5 py-5 border-b border-slate-100">
                     <div className="flex items-center gap-2.5 mb-4">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center">
                             <Sparkles className="w-4 h-4 text-white" />
                         </div>
                         <div>
                             <p className="text-sm font-bold text-slate-900">Folio AI</p>
-                            <p className="text-[11px] text-slate-400">Building your portfolio</p>
+                            <p className="text-[11px] font-medium text-slate-500">Building your portfolio</p>
                         </div>
                     </div>
 
                     {/* Progress bar */}
                     <div className="space-y-1.5">
                         <div className="flex justify-between items-center">
-                            <span className="text-[11px] font-medium text-slate-500">Progress</span>
-                            <span className="text-[11px] font-bold text-blue-600">{progressPct}%</span>
+                            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Progress</span>
+                            <span className="text-[11px] font-bold text-slate-900">{progressPct}%</span>
                         </div>
                         <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                             <motion.div
-                                className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"
+                                className="h-full bg-slate-900 rounded-full"
                                 initial={{ width: 0 }}
                                 animate={{ width: `${progressPct}%` }}
                                 transition={{ duration: 0.5 }}
                             />
                         </div>
-                        <p className="text-[11px] text-slate-400">{doneCount} of {SECTIONS.length} sections</p>
+                        <p className="text-[10px] font-medium text-slate-400">{doneCount} of {SECTIONS.length} sections</p>
                     </div>
                 </div>
 
@@ -155,23 +155,23 @@ const AIChat = ({ sessionId, collectedData, onSessionId, onDataUpdate, onComplet
             <div className="flex-1 flex flex-col bg-slate-50 min-w-0">
 
                 {/* Chat top bar */}
-                <div className="bg-white border-b border-slate-200 px-4 py-3 flex items-center gap-3 shrink-0">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shrink-0">
+                <div className="bg-white border-b border-slate-100 px-5 py-4 flex items-center gap-4 shrink-0 shadow-sm z-10">
+                    <div className="w-9 h-9 rounded-full bg-slate-900 flex items-center justify-center shrink-0">
                         <Bot className="w-4 h-4 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-slate-900">Folio AI</p>
-                        <p className="text-[11px] text-slate-400 truncate">Collecting your portfolio details</p>
+                        <p className="text-sm font-bold text-slate-900">Folio AI</p>
+                        <p className="text-[11px] font-medium text-slate-500 truncate">Collecting your portfolio details</p>
                     </div>
                     {/* Mobile progress pill */}
-                    <div className="lg:hidden flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-full">
-                        <div className="w-16 h-1 bg-slate-200 rounded-full overflow-hidden">
+                    <div className="lg:hidden flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
+                        <div className="w-16 h-1.5 bg-white rounded-full overflow-hidden">
                             <div
-                                className="h-full bg-blue-500 rounded-full transition-all"
+                                className="h-full bg-slate-900 rounded-full transition-all"
                                 style={{ width: `${progressPct}%` }}
                             />
                         </div>
-                        <span className="text-[11px] font-bold text-blue-600">{progressPct}%</span>
+                        <span className="text-[11px] font-bold text-slate-900">{progressPct}%</span>
                     </div>
                 </div>
 
@@ -187,20 +187,20 @@ const AIChat = ({ sessionId, collectedData, onSessionId, onDataUpdate, onComplet
                                 className={`flex items-end gap-2.5 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}
                             >
                                 {/* Avatar */}
-                                <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${msg.role === "user"
-                                        ? "bg-slate-200"
-                                        : "bg-gradient-to-br from-blue-500 to-indigo-600"
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm ${msg.role === "user"
+                                    ? "bg-slate-100 border border-slate-200"
+                                    : "bg-slate-900"
                                     }`}>
                                     {msg.role === "user"
-                                        ? <User className="w-3.5 h-3.5 text-slate-500" />
-                                        : <Bot className="w-3.5 h-3.5 text-white" />
+                                        ? <User className="w-4 h-4 text-slate-600" />
+                                        : <Bot className="w-4 h-4 text-white" />
                                     }
                                 </div>
 
                                 {/* Bubble */}
-                                <div className={`max-w-[75%] sm:max-w-[65%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${msg.role === "user"
-                                        ? "bg-blue-600 text-white rounded-br-sm"
-                                        : "bg-white text-slate-800 rounded-bl-sm border border-slate-100"
+                                <div className={`max-w-[75%] sm:max-w-[65%] rounded-2xl px-5 py-3.5 text-sm leading-relaxed shadow-sm ${msg.role === "user"
+                                    ? "bg-slate-900 text-white rounded-br-sm"
+                                    : "bg-white text-slate-800 rounded-bl-sm border border-slate-200"
                                     }`}>
                                     {msg.content}
                                 </div>
@@ -215,15 +215,15 @@ const AIChat = ({ sessionId, collectedData, onSessionId, onDataUpdate, onComplet
                             animate={{ opacity: 1, y: 0 }}
                             className="flex items-end gap-2.5"
                         >
-                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shrink-0">
-                                <Bot className="w-3.5 h-3.5 text-white" />
+                            <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center shrink-0 shadow-sm">
+                                <Bot className="w-4 h-4 text-white" />
                             </div>
-                            <div className="bg-white border border-slate-100 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
-                                <div className="flex gap-1">
+                            <div className="bg-white border border-slate-200 rounded-2xl rounded-bl-sm px-4 py-3.5 shadow-sm">
+                                <div className="flex gap-1.5">
                                     {[0, 150, 300].map((delay) => (
                                         <div
                                             key={delay}
-                                            className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                                            className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"
                                             style={{ animationDelay: `${delay}ms` }}
                                         />
                                     ))}
@@ -235,26 +235,24 @@ const AIChat = ({ sessionId, collectedData, onSessionId, onDataUpdate, onComplet
                 </div>
 
                 {/* Input bar */}
-                <div className="bg-white border-t border-slate-200 px-4 py-3 shrink-0">
-                    <form onSubmit={handleSubmit} className="flex items-center gap-2">
+                <div className="bg-white border-t border-slate-200 px-4 py-4 shrink-0 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
+                    <form onSubmit={handleSubmit} className="flex items-center gap-3 max-w-4xl mx-auto">
                         <input
                             ref={inputRef}
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             disabled={sending}
-                            placeholder="Type your answer..."
-                            className="flex-1 px-4 py-3 bg-slate-50 rounded-xl text-sm border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all disabled:opacity-50"
+                            placeholder="Type your message..."
+                            className="flex-1 px-5 py-3.5 bg-slate-50 focus:bg-white rounded-xl text-sm border border-slate-200 focus:border-slate-300 focus:ring-4 focus:ring-slate-100 focus:outline-none transition-all disabled:opacity-50 shadow-sm"
                         />
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
+                        <button
                             type="submit"
                             disabled={!input.trim() || sending}
-                            className="w-11 h-11 bg-blue-600 text-white rounded-xl flex items-center justify-center hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                            className="w-12 h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0 shadow-sm hover:-translate-y-0.5 focus:ring-4 focus:ring-slate-200"
                         >
-                            {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                        </motion.button>
+                            {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 ml-0.5" />}
+                        </button>
                     </form>
                 </div>
             </div>

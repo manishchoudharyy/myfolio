@@ -69,8 +69,8 @@ const TemplateGrid = ({ onSelect }) => {
                 animate={{ opacity: 1, y: 0 }}
                 className="text-center mb-10"
             >
-                <h2 className="text-3xl font-bold text-slate-900 mb-2">Choose your template</h2>
-                <p className="text-slate-500">Pick a design that matches your vibe — you can change it later!</p>
+                <h2 className="text-3xl font-black tracking-tight text-slate-900 mb-2">Choose your template</h2>
+                <p className="text-slate-500 font-medium">Pick a design that matches your vibe — you can change it later!</p>
             </motion.div>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
@@ -85,14 +85,14 @@ const TemplateGrid = ({ onSelect }) => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.08 }}
                             onClick={() => setSelected(template._id)}
-                            className={`relative cursor-pointer rounded-2xl border-2 overflow-hidden transition-all group ${isSelected
-                                    ? "border-blue-600 shadow-lg shadow-blue-100 scale-[1.02]"
-                                    : "border-slate-200 hover:border-slate-300 hover:shadow-md"
+                            className={`relative cursor-pointer rounded-3xl border-2 overflow-hidden transition-all group ${isSelected
+                                ? "border-slate-900 shadow-xl scale-[1.02]"
+                                : "border-slate-200 hover:border-slate-400 hover:shadow-md"
                                 }`}
                         >
                             {isSelected && (
-                                <div className="absolute top-3 right-3 z-10 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                                    <Check className="w-3.5 h-3.5 text-white" />
+                                <div className="absolute top-4 right-4 z-10 w-7 h-7 bg-slate-900 rounded-full flex items-center justify-center shadow-sm">
+                                    <Check className="w-4 h-4 text-white" />
                                 </div>
                             )}
 
@@ -125,9 +125,9 @@ const TemplateGrid = ({ onSelect }) => {
                 <button
                     onClick={handleContinue}
                     disabled={!selected || creating}
-                    className={`px-10 py-3.5 rounded-xl font-semibold text-white transition-all flex items-center gap-2 ${selected
-                            ? "bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200"
-                            : "bg-slate-300 cursor-not-allowed"
+                    className={`px-10 py-4 rounded-2xl font-bold text-white transition-all flex items-center gap-2 ${selected
+                        ? "bg-slate-900 hover:bg-slate-800 shadow-sm focus:ring-4 focus:ring-slate-200"
+                        : "bg-slate-200 cursor-not-allowed opacity-60"
                         }`}
                 >
                     {creating ? (

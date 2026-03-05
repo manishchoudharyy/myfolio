@@ -50,9 +50,9 @@ const ResumeUpload = ({ onParsed }) => {
 
     return (
         <div className="max-w-xl mx-auto px-4 py-16">
-            <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-slate-900 mb-2">Upload your resume</h2>
-                <p className="text-slate-500 text-sm">Upload a PDF and AI will extract all your details</p>
+            <div className="text-center mb-10">
+                <h2 className="text-3xl font-black tracking-tight text-slate-900 mb-2">Upload your resume</h2>
+                <p className="text-slate-500 font-medium text-sm">Upload a PDF and AI will extract all your details</p>
             </div>
 
             {/* Drop zone */}
@@ -62,9 +62,9 @@ const ResumeUpload = ({ onParsed }) => {
                 onDrop={handleDrop}
                 onDragOver={(e) => e.preventDefault()}
                 onClick={() => status === "idle" && inputRef.current?.click()}
-                className={`relative border-2 border-dashed rounded-2xl p-10 text-center transition-all cursor-pointer ${file
-                    ? "border-blue-300 bg-blue-50/50"
-                    : "border-slate-300 bg-white hover:border-blue-400 hover:bg-blue-50/30"
+                className={`relative border-2 border-dashed rounded-3xl p-10 text-center transition-all cursor-pointer ${file
+                    ? "border-slate-900 bg-slate-50"
+                    : "border-slate-200 bg-white hover:border-slate-400 hover:bg-slate-50"
                     }`}
             >
                 <input
@@ -89,8 +89,8 @@ const ResumeUpload = ({ onParsed }) => {
 
                 {file && status === "idle" && (
                     <>
-                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <FileText className="w-7 h-7 text-blue-600" />
+                        <div className="w-16 h-16 bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                            <FileText className="w-7 h-7 text-white" />
                         </div>
                         <p className="text-slate-900 font-semibold mb-1">{file.name}</p>
                         <p className="text-slate-400 text-sm">{(file.size / 1024).toFixed(0)} KB</p>
@@ -99,13 +99,13 @@ const ResumeUpload = ({ onParsed }) => {
 
                 {(status === "uploading" || status === "parsing") && (
                     <>
-                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Loader2 className="w-7 h-7 text-blue-600 animate-spin" />
+                        <div className="w-16 h-16 bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                            <Loader2 className="w-7 h-7 text-white animate-spin" />
                         </div>
                         <p className="text-slate-900 font-semibold mb-1">{progress}</p>
                         <div className="w-48 h-1.5 bg-slate-200 rounded-full mx-auto mt-3 overflow-hidden">
                             <motion.div
-                                className="h-full bg-blue-600 rounded-full"
+                                className="h-full bg-slate-900 rounded-full"
                                 initial={{ width: "0%" }}
                                 animate={{ width: "90%" }}
                                 transition={{ duration: 4 }}
@@ -116,7 +116,7 @@ const ResumeUpload = ({ onParsed }) => {
 
                 {status === "done" && (
                     <>
-                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div className="w-16 h-16 bg-green-50 border border-green-200 rounded-full flex items-center justify-center mx-auto mb-4">
                             <CheckCircle2 className="w-7 h-7 text-green-600" />
                         </div>
                         <p className="text-green-700 font-semibold">Resume parsed successfully!</p>
@@ -138,7 +138,7 @@ const ResumeUpload = ({ onParsed }) => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     onClick={handleUpload}
-                    className="w-full mt-6 px-6 py-3.5 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
+                    className="w-full mt-6 px-6 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-sm focus:ring-4 focus:ring-slate-200 hover:-translate-y-0.5"
                 >
                     Upload Resume
                 </motion.button>
