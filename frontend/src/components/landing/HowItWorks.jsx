@@ -8,29 +8,33 @@ const steps = [
         number: '01',
         icon: Upload,
         title: 'Upload Resume or Chat',
-        description: 'Already have a resume? Upload it. No resume? Just chat with our AI and describe your experience — it handles everything.',
-        iconBg: 'bg-blue-100',
+        description: 'Already have a resume? Upload it. No resume? Just chat with our AI and describe your experience.',
+        iconStyle: 'text-indigo-600',
+        bgStyle: 'bg-indigo-50 border-indigo-100',
     },
     {
         number: '02',
         icon: Sparkles,
-        title: 'AI Builds Your Portfolio',
-        description: 'Our AI extracts your skills, projects, and experience to generate compelling portfolio content in seconds.',
-        iconBg: 'bg-indigo-100',
+        title: 'AI Structures Data',
+        description: 'Our AI extracts your skills, projects, and experience to generate professional content instantly.',
+        iconStyle: 'text-blue-600',
+        bgStyle: 'bg-blue-50 border-blue-100',
     },
     {
         number: '03',
         icon: Layers,
         title: 'Pick a Template',
-        description: 'Browse beautiful templates and choose the one that matches your style. Switch anytime — your data stays intact.',
-        iconBg: 'bg-violet-100',
+        description: 'Browse beautiful templates and choose the one that matches your style. Switch anytime, data stays intact.',
+        iconStyle: 'text-violet-600',
+        bgStyle: 'bg-violet-50 border-violet-100',
     },
     {
         number: '04',
         icon: Rocket,
         title: 'Go Live Instantly',
-        description: 'Choose your custom subdomain and publish with one click. Your portfolio is instantly live on your own professional link.',
-        iconBg: 'bg-emerald-100',
+        description: 'Choose your custom subdomain and publish with one click. Your portfolio is instantly live.',
+        iconStyle: 'text-emerald-600',
+        bgStyle: 'bg-emerald-50 border-emerald-100',
     },
 ];
 
@@ -38,64 +42,65 @@ const HowItWorks = () => {
     const navigate = useNavigate();
 
     return (
-        <section id="how-it-works" className="py-12 md:py-20 lg:py-24 bg-slate-50">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <section id="how-it-works" className="py-20 md:py-32 bg-white relative">
+
+            {/* Subtle background element */}
+            <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_right,_var(--tw-gradient-stops))] from-slate-50 via-white to-white pointer-events-none" />
+
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
 
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="text-center max-w-2xl mx-auto mb-10 md:mb-14 lg:mb-16"
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    className="text-center max-w-2xl mx-auto mb-16 md:mb-24"
                 >
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-sm font-semibold mb-4">
-                        <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 ring-subtle text-slate-600 text-xs font-bold uppercase tracking-wider mb-6">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
                         Simple Process
                     </div>
-                    <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 leading-tight mb-4">
+                    <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 leading-[1.1] mb-6">
                         From zero to live —{' '}
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-400 to-slate-600">
                             in 4 steps
                         </span>
                     </h2>
-                    <p className="text-slate-500 text-base sm:text-lg leading-relaxed">
+                    <p className="text-slate-500 text-lg leading-relaxed font-medium">
                         Stop worrying about HTML, CSS, or hosting. Focus on your story, and let MyFolio handle the presentation.
                     </p>
                 </motion.div>
 
                 {/* Steps grid */}
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 md:mb-12">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-16 relative">
+
+                    {/* Connecting line for desktop */}
+                    <div className="hidden lg:block absolute top-[2.5rem] sm:top-[3rem] left-[12%] right-[12%] h-[2px] bg-slate-100 z-0" />
+
                     {steps.map((step, i) => {
                         const Icon = step.icon;
                         return (
                             <motion.div
                                 key={i}
-                                initial={{ opacity: 0, y: 24 }}
+                                initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.1, duration: 0.5 }}
-                                className="relative bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-blue-200 transition-all group"
+                                viewport={{ once: true, margin: "-50px" }}
+                                transition={{ delay: i * 0.15, duration: 0.6, type: "spring", bounce: 0.3 }}
+                                className="relative z-10 flex flex-col items-center text-center group"
                             >
-                                {/* Step number */}
-                                <span className="absolute top-4 right-4 text-[11px] font-bold text-slate-300">
-                                    {step.number}
-                                </span>
+                                {/* Icon Bubble */}
+                                <div className={`w-20 h-20 sm:w-24 sm:h-24 ${step.bgStyle} border rounded-full flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 relative`}>
+                                    <Icon className={`w-8 h-8 sm:w-10 sm:h-10 ${step.iconStyle}`} strokeWidth={1.5} />
 
-                                {/* Icon */}
-                                <div className={`w-10 h-10 sm:w-11 sm:h-11 ${step.iconBg} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                                    <Icon className="w-5 h-5 text-blue-600" />
+                                    {/* Step number badge */}
+                                    <div className="absolute -top-1 -right-1 w-7 h-7 bg-slate-900 text-white text-[11px] font-bold rounded-full flex items-center justify-center shadow-md ring-2 ring-white">
+                                        {step.number}
+                                    </div>
                                 </div>
 
-                                <h3 className="font-bold text-slate-900 mb-2 text-sm sm:text-base">{step.title}</h3>
-                                <p className="text-sm text-slate-500 leading-relaxed">{step.description}</p>
-
-                                {/* Connector arrow (desktop only) */}
-                                {i < steps.length - 1 && (
-                                    <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
-                                        <ArrowRight className="w-5 h-5 text-slate-300" />
-                                    </div>
-                                )}
+                                <h3 className="text-xl font-bold text-slate-900 mb-3">{step.title}</h3>
+                                <p className="text-base text-slate-500 leading-relaxed font-medium px-2">{step.description}</p>
                             </motion.div>
                         );
                     })}
@@ -103,17 +108,18 @@ const HowItWorks = () => {
 
                 {/* CTA */}
                 <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center mt-8 md:mt-12"
+                    transition={{ delay: 0.6 }}
+                    className="text-center"
                 >
                     <button
                         onClick={() => navigate('/login')}
-                        className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-xl font-semibold text-sm transition-all shadow-lg shadow-blue-100 group"
+                        className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-full font-bold text-sm transition-all shadow-[0_8px_20px_rgb(0,0,0,0.12)] hover:shadow-[0_12px_28px_rgb(0,0,0,0.16)] group"
                     >
                         Start Building Now
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 group-hover:text-white transition-all" />
                     </button>
                 </motion.div>
             </div>
