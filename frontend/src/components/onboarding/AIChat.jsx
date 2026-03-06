@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Send, Loader2, CheckCircle2, Circle, Sparkles, Bot, User } from "lucide-react";
+import { Send, Loader2, CheckCircle2, Circle, Sparkles, Bot, User, ArrowRight } from "lucide-react";
 import { aiAPI } from "../../services/api";
 
 const SECTIONS = [
@@ -21,6 +21,7 @@ const AIChat = ({ sessionId, collectedData, onSessionId, onDataUpdate, onComplet
     const [currentSessionId, setCurrentSessionId] = useState(sessionId);
     const [localData, setLocalData] = useState(collectedData || {});
     const [initialized, setInitialized] = useState(false);
+    const [isChatComplete, setIsChatComplete] = useState(false);
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
 
@@ -55,7 +56,7 @@ const AIChat = ({ sessionId, collectedData, onSessionId, onDataUpdate, onComplet
             if (!currentSessionId) { setCurrentSessionId(sid); onSessionId(sid); }
             setMessages((prev) => [...prev, { role: "assistant", content: message }]);
             if (newData) { setLocalData(newData); onDataUpdate(newData); }
-            if (isComplete) setTimeout(() => onComplete(newData), 1500);
+            if (isComplete) setIsChatComplete(true);
         } catch {
             setMessages((prev) => [...prev, { role: "assistant", content: "Oops, something went wrong. Please try again! 😅" }]);
         } finally {
@@ -78,6 +79,7 @@ const AIChat = ({ sessionId, collectedData, onSessionId, onDataUpdate, onComplet
 
     const isSectionDone = (key) => {
         const d = localData;
+        if (key in d) return true; // If AI tracked it, even as empty array, consider it done
         if (key === "name") return !!d.name;
         if (key === "title") return !!d.title;
         if (key === "about") return !!d.about;
@@ -236,24 +238,36 @@ const AIChat = ({ sessionId, collectedData, onSessionId, onDataUpdate, onComplet
 
                 {/* Input bar */}
                 <div className="bg-white border-t border-slate-200 px-4 py-4 shrink-0 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
-                    <form onSubmit={handleSubmit} className="flex items-center gap-3 max-w-4xl mx-auto">
-                        <input
-                            ref={inputRef}
-                            type="text"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            disabled={sending}
-                            placeholder="Type your message..."
-                            className="flex-1 px-5 py-3.5 bg-slate-50 focus:bg-white rounded-xl text-sm border border-slate-200 focus:border-slate-300 focus:ring-4 focus:ring-slate-100 focus:outline-none transition-all disabled:opacity-50 shadow-sm"
-                        />
-                        <button
-                            type="submit"
-                            disabled={!input.trim() || sending}
-                            className="w-12 h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0 shadow-sm hover:-translate-y-0.5 focus:ring-4 focus:ring-slate-200"
-                        >
-                            {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 ml-0.5" />}
-                        </button>
-                    </form>
+                    {isChatComplete ? (
+                        <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-3">
+                            <p className="text-sm font-medium text-slate-600">All information collected successfully! 🎉</p>
+                            <button
+                                onClick={() => onComplete(localData)}
+                                className="px-6 py-3 bg-slate-900 text-white rounded-xl font-medium flex items-center justify-center hover:bg-slate-800 transition-all shadow-sm focus:ring-4 focus:ring-slate-200 w-full sm:w-auto"
+                            >
+                                Proceed to Templates <ArrowRight className="w-4 h-4 ml-2" />
+                            </button>
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit} className="flex items-center gap-3 max-w-4xl mx-auto">
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                disabled={sending}
+                                placeholder="Type your message..."
+                                className="flex-1 px-5 py-3.5 bg-slate-50 focus:bg-white rounded-xl text-sm border border-slate-200 focus:border-slate-300 focus:ring-4 focus:ring-slate-100 focus:outline-none transition-all disabled:opacity-50 shadow-sm"
+                            />
+                            <button
+                                type="submit"
+                                disabled={!input.trim() || sending}
+                                className="w-12 h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0 shadow-sm hover:-translate-y-0.5 focus:ring-4 focus:ring-slate-200"
+                            >
+                                {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 ml-0.5" />}
+                            </button>
+                        </form>
+                    )}
                 </div>
             </div>
         </div>
