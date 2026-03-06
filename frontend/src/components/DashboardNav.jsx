@@ -44,41 +44,39 @@ const DashboardNav = ({ portfolioUrl }) => {
     return (
         <>
             <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between relative">
 
-                    {/* Left: Logo & Links */}
-                    <div className="flex items-center gap-8">
-                        <div
-                            className="flex items-center gap-2.5 cursor-pointer"
-                            onClick={() => navigate('/')}
-                        >
-                            <img src={logo} alt="MyFolio" className="w-6 h-6 rounded" />
-                            <span className="font-bold text-slate-900 tracking-tight">MyFolio</span>
-                        </div>
-
-                        {/* Desktop Nav */}
-                        <nav className="hidden md:flex items-center gap-0.5">
-                            {links.map(({ to, label, icon: Icon }) => (
-                                <NavLink
-                                    key={to}
-                                    to={to}
-                                    className={({ isActive }) =>
-                                        `flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all
-                                        ${isActive
-                                            ? "bg-slate-900 text-white shadow-sm"
-                                            : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/80"
-                                        }`
-                                    }
-                                >
-                                    <Icon className="w-4 h-4" />
-                                    {label}
-                                </NavLink>
-                            ))}
-                        </nav>
+                    {/* Logo (Left) */}
+                    <div
+                        className="flex items-center gap-2.5 cursor-pointer z-10"
+                        onClick={() => navigate('/')}
+                    >
+                        <img src={logo} alt="MyFolio" className="w-6 h-6 rounded" />
+                        <span className="font-bold text-slate-900 tracking-tight">MyFolio</span>
                     </div>
 
+                    {/* Desktop Nav (Center) */}
+                    <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-1 z-10">
+                        {links.map(({ to, label, icon: Icon }) => (
+                            <NavLink
+                                key={to}
+                                to={to}
+                                className={({ isActive }) =>
+                                    `flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all
+                                    ${isActive
+                                        ? "bg-slate-900 text-white shadow-sm"
+                                        : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/80"
+                                    }`
+                                }
+                            >
+                                <Icon className="w-4 h-4" />
+                                {label}
+                            </NavLink>
+                        ))}
+                    </nav>
+
                     {/* Right: Actions */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 z-10">
                         {portfolioUrl && (
                             <a
                                 href={portfolioUrl}

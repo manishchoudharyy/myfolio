@@ -40,15 +40,15 @@ const Navbar = () => {
 
           {/* Logo */}
           <div
-            className="flex items-center gap-2.5 cursor-pointer group"
+            className="flex items-center gap-2.5 cursor-pointer group z-10"
             onClick={() => navigate('/')}
           >
             <img className="h-7 w-7 rounded-[8px] transition-transform group-hover:scale-105" src={logo} alt="MyFolio" />
             <span className="font-bold text-lg text-slate-900 tracking-tight">MyFolio</span>
           </div>
 
-          {/* Desktop nav links — pill style */}
-          <div className="hidden md:flex items-center gap-1 bg-slate-900/5 p-1 rounded-full border border-slate-200/50 backdrop-blur-md">
+          {/* Desktop nav links — centered */}
+          <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-1 bg-slate-900/5 p-1 rounded-full border border-slate-200/50 backdrop-blur-md z-10">
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -61,7 +61,7 @@ const Navbar = () => {
           </div>
 
           {/* Desktop CTAs */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-2 z-10">
             {isAuthenticated ? (
               <motion.button
                 whileHover={{ scale: 1.02 }}
