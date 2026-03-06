@@ -189,7 +189,7 @@ const Onboarding = () => {
             </header>
 
             {/* Step content */}
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 overflow-x-hidden">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={step}
