@@ -46,6 +46,7 @@ const MODEL = "openai/gpt-4o-mini";
 // ─────────────────────── HELPERS ───────────────────────
 
 async function aiChat(messages, temperature = 0.7, maxTokens = 2000) {
+    console.log("AI Chat Runnig", MODEL, process.env.GITHUB_TOKEN)
     const response = await client.chat.completions.create({
         model: MODEL,
         messages,
@@ -53,17 +54,54 @@ async function aiChat(messages, temperature = 0.7, maxTokens = 2000) {
         top_p: 1.0,
         max_tokens: maxTokens,
     });
+    console.log(response.choices[0].message.content)
     return response.choices[0].message.content;
 }
 
-function extractJSON(text) {
-    try {
-        const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
-        const jsonStr = jsonMatch ? jsonMatch[1].trim() : text.trim();
-        return JSON.parse(jsonStr);
-    } catch {
-        return null;
+function extractAllJSON(text) {
+    const results = [];
+
+    function parseAndPush(blockStr) {
+        blockStr = blockStr.trim();
+        if (!blockStr) return;
+        try {
+            results.push(JSON.parse(blockStr));
+        } catch (e) {
+            try {
+                // Handle multiple consecutive JSON objects like {}\n{}
+                const arrayStr = `[${blockStr.replace(/}\s*\{/g, '},{')}]`;
+                const parsedArray = JSON.parse(arrayStr);
+                if (Array.isArray(parsedArray)) {
+                    results.push(...parsedArray);
+                }
+            } catch (e2) {
+                console.error("Failed to parse JSON block:", e2.message, "Block:", blockStr);
+            }
+        }
     }
+
+    try {
+        // Try matching standard markdown JSON blocks first
+        const regex = /```(?:json)?\s*([\s\S]*?)```/g;
+        let match;
+        let foundMarkdown = false;
+        while ((match = regex.exec(text)) !== null) {
+            foundMarkdown = true;
+            parseAndPush(match[1]);
+        }
+
+        // If no markdown block found, attempt to find raw JSON '{ ... }'
+        if (!foundMarkdown) {
+            const startIdx = text.indexOf('{');
+            const endIdx = text.lastIndexOf('}');
+            if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
+                parseAndPush(text.substring(startIdx, endIdx + 1));
+            }
+        }
+    } catch (error) {
+        console.error(`Error processing JSON from text:`, text, error);
+    }
+    return results;
 }
 
 // Portfolio sections we need to collect
@@ -111,35 +149,27 @@ RULES:
 1. Ask ONLY ONE question at a time
 2. Be conversational, warm, and encouraging (use emojis occasionally)
 3. Acknowledge what the user said before asking the next question
-4. After EVERY user response, you MUST include a JSON block at the END of your message to save the extracted data
+4. CRITICAL: Whenever the user provides information, you MUST extract it and append a JSON block at the VERY END of your message to save it. Do not forget the JSON block!
 5. For array fields (skills, experience, education, projects), MERGE new entries with existing data
 6. When ALL sections are collected, say exactly "ALL_SECTIONS_COMPLETE" somewhere in your response
 7. If user says "skip" for a section, move to the next one
 8. Keep your responses concise (2-3 sentences + the question)
 
-JSON FORMAT — include this at the end of EVERY response:
+JSON FORMAT — include this at the end of EVERY response where user gave data:
 \`\`\`json
 {"save": {"field": "name", "value": "John Doe"}}
 \`\`\`
 
-For array fields:
+EXAMPLE INTERACTION:
+User: I am Manish Choudhary
+Assistant: Nice to meet you, Manish Choudhary! 🌟 Now, what's your professional title or role? (e.g., Full Stack Developer)
+\`\`\`json
+{"save": {"field": "name", "value": "Manish Choudhary"}}
+\`\`\`
+
+For array fields (skills, projects, experience, education):
 \`\`\`json
 {"save": {"field": "skills", "value": [{"name": "React", "level": "Advanced"}, {"name": "Node.js", "level": "Intermediate"}]}}
-\`\`\`
-
-For experience:
-\`\`\`json
-{"save": {"field": "experience", "value": [{"company": "...", "role": "...", "startDate": "...", "endDate": "...", "description": "..."}]}}
-\`\`\`
-
-For education:
-\`\`\`json
-{"save": {"field": "education", "value": [{"institution": "...", "degree": "...", "field": "...", "startYear": "...", "endYear": "..."}]}}
-\`\`\`
-
-For projects:
-\`\`\`json
-{"save": {"field": "projects", "value": [{"title": "...", "description": "...", "techStack": ["React", "Node.js"], "liveUrl": "", "githubUrl": ""}]}}
 \`\`\`
 
 For contact:
@@ -147,7 +177,7 @@ For contact:
 {"save": {"field": "contact", "value": {"email": "...", "phone": "...", "linkedin": "...", "github": "..."}}}
 \`\`\`
 
-IMPORTANT: If the user gives you casual/raw info, still extract and structure it properly in the JSON.`;
+IMPORTANT: You must output the JSON block whenever you receive information. If the user gives you casual/raw info, still extract and structure it properly in the JSON.`;
 };
 
 const REFINEMENT_PROMPT = (portfolioData) => `You are "Folio AI", a portfolio content editor. The user's portfolio is live and they want to refine the content.
@@ -278,7 +308,8 @@ router.post("/resume-parse", auth, upload.single("resume"), async (req, res) => 
             { role: "user", content: resumeText },
         ], 0.3, 3000);
 
-        const parsedData = extractJSON(responseText);
+        const parsedBlocks = extractAllJSON(responseText);
+        const parsedData = parsedBlocks.length > 0 ? parsedBlocks[0] : null;
 
         if (!parsedData) {
             return res.status(500).json({
@@ -386,8 +417,12 @@ router.post("/onboard", auth, async (req, res) => {
 
         // Add current message
         if (message) {
-            messages.push({ role: "user", content: message });
             session.messages.push({ role: "user", content: message });
+            // Add a strong reminder to the last message sent to AI (but not to DB)
+            messages.push({
+                role: "user",
+                content: `${message}\n\n[SYSTEM REMINDER: If I just gave you any info (like my name, title, skills, etc), you MUST append the \`\`\`json {"save": {...}} \`\`\` block at the very end of your reply to save it!]`
+            });
         } else {
             // First message — AI should greet and ask first question
             messages.push({ role: "user", content: "Hi, I want to create my portfolio." });
@@ -401,15 +436,24 @@ router.post("/onboard", auth, async (req, res) => {
         session.messages.push({ role: "assistant", content: responseText });
 
         // Extract save data from response
-        const saveData = extractJSON(responseText);
-        if (saveData?.save) {
-            const { field, value } = saveData.save;
-            // For array fields, merge with existing
-            if (Array.isArray(value) && Array.isArray(session.collectedData[field])) {
-                session.collectedData[field] = [...session.collectedData[field], ...value];
-            } else {
-                session.collectedData[field] = value;
+        const extractedBlocks = extractAllJSON(responseText);
+        console.log("Raw AI Response:", responseText);
+        console.log("Extracted JSON:", extractedBlocks);
+
+        let hasUpdates = false;
+        for (const saveData of extractedBlocks) {
+            if (saveData?.save) {
+                const { field, value } = saveData.save;
+                // For array fields, merge with existing
+                if (Array.isArray(value) && Array.isArray(session.collectedData[field])) {
+                    session.collectedData[field] = [...session.collectedData[field], ...value];
+                } else {
+                    session.collectedData[field] = value;
+                }
+                hasUpdates = true;
             }
+        }
+        if (hasUpdates) {
             session.markModified("collectedData");
         }
 
@@ -425,7 +469,7 @@ router.post("/onboard", auth, async (req, res) => {
             success: true,
             data: {
                 sessionId: session._id,
-                message: responseText.replace(/```json[\s\S]*?```/g, "").trim(), // Clean response (remove JSON blocks)
+                message: responseText.replace(/```(?:json)?\s*[\s\S]*?```/g, "").replace(/\{[\s\S]*\}/g, "").trim(), // Clean response (remove ALL JSON blocks and plain json text)
                 collectedData: session.collectedData,
                 isComplete,
             },
@@ -492,11 +536,17 @@ router.post("/refine", auth, async (req, res) => {
         session.messages.push({ role: "assistant", content: responseText });
 
         // Extract update data
-        const updateData = extractJSON(responseText);
-        if (updateData?.update) {
-            const currentData = portfolio.data.toObject();
-            Object.assign(currentData, updateData.update);
-            portfolio.data = currentData;
+        const extractedBlocks = extractAllJSON(responseText);
+        let hasUpdates = false;
+        for (const updateData of extractedBlocks) {
+            if (updateData?.update) {
+                const currentData = portfolio.data.toObject();
+                Object.assign(currentData, updateData.update);
+                portfolio.data = currentData;
+                hasUpdates = true;
+            }
+        }
+        if (hasUpdates) {
             await portfolio.save();
         }
 
@@ -508,7 +558,7 @@ router.post("/refine", auth, async (req, res) => {
                 sessionId: session._id,
                 message: responseText.replace(/```json[\s\S]*?```/g, "").trim(),
                 portfolioData: portfolio.data,
-                updated: !!updateData?.update,
+                updated: hasUpdates,
             },
         });
     } catch (error) {
@@ -596,7 +646,8 @@ router.post("/generate", auth, async (req, res) => {
             { role: "user", content: prompt },
         ]);
 
-        const parsedData = extractJSON(responseText);
+        const parsedBlocks = extractAllJSON(responseText);
+        const parsedData = parsedBlocks.length > 0 ? parsedBlocks[0] : null;
 
         if (parsedData) {
             const updateData = { ...portfolio.data.toObject() };
