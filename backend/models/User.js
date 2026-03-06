@@ -38,10 +38,10 @@ const userSchema = new mongoose.Schema(
         },
         authProvider: {
             type: String,
-            enum: ["google", "phone"],
+            enum: ["google", "email"],
             required: true,
         },
-        isPhoneVerified: {
+        isEmailVerified: {
             type: Boolean,
             default: false,
         },

@@ -2,6 +2,8 @@ import { Router } from "express";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 import User from "../models/User.js";
+import Otp from "../models/Otp.js";
+import { sendEmail } from "../utils/email.js";
 
 const router = Router();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -75,47 +77,53 @@ router.post("/google", async (req, res) => {
 });
 
 // =====================================================
-// POST /api/auth/send-otp — Send OTP via 2Factor API
+// POST /api/auth/send-otp — Send OTP via Email
 // =====================================================
 router.post("/send-otp", async (req, res) => {
     try {
-        const { phone } = req.body;
+        const { email } = req.body;
 
-        if (!phone) {
+        if (!email) {
             return res.status(400).json({
                 success: false,
-                error: { message: "Phone number is required", code: "MISSING_PHONE" },
+                error: { message: "Email is required", code: "MISSING_EMAIL" },
             });
         }
 
-        // Validate Indian phone number (10 digits)
-        const cleanPhone = phone.replace(/\D/g, "").slice(-10);
-        if (cleanPhone.length !== 10) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
             return res.status(400).json({
                 success: false,
-                error: { message: "Invalid phone number. Enter 10-digit number.", code: "INVALID_PHONE" },
+                error: { message: "Invalid email format.", code: "INVALID_EMAIL" },
             });
         }
 
-        // Send OTP via 2Factor API
-        const apiKey = process.env.TWO_FACTOR_API_KEY;
-        const response = await fetch(
-            `https://2factor.in/API/V1/${apiKey}/SMS/${cleanPhone}/AUTOGEN`,
-        );
-        const data = await response.json();
+        // Generate 6 digit OTP
+        const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-        if (data.Status !== "Success") {
-            return res.status(500).json({
-                success: false,
-                error: { message: "Failed to send OTP. Try again.", code: "OTP_SEND_FAILED" },
+        // Delete any existing OTP for this email
+        await Otp.deleteMany({ email });
+
+        // Save new OTP
+        await Otp.create({ email, otp: generatedOtp });
+
+        // Send OTP via Email
+        try {
+            await sendEmail({
+                email,
+                subject: "Your MyFolio Verification Code",
+                message: `Your verification code is: ${generatedOtp}. This code is valid for 10 minutes.`,
             });
+            console.log(`[Development] OTP for ${email}: ${generatedOtp}`); // For easy dev test without email
+        } catch (err) {
+            console.error("Email Send Error:", err);
+            console.log(`[Development Fallback] OTP for ${email}: ${generatedOtp}`);
         }
 
         res.json({
             success: true,
             data: {
-                sessionId: data.Details,
-                phone: cleanPhone,
+                email,
                 message: "OTP sent successfully",
             },
         });
@@ -129,42 +137,40 @@ router.post("/send-otp", async (req, res) => {
 });
 
 // =====================================================
-// POST /api/auth/verify-otp — Verify OTP via 2Factor API
+// POST /api/auth/verify-otp — Verify OTP
 // =====================================================
 router.post("/verify-otp", async (req, res) => {
     try {
-        const { phone, sessionId, otp } = req.body;
+        const { email, otp } = req.body;
 
-        if (!phone || !sessionId || !otp) {
+        if (!email || !otp) {
             return res.status(400).json({
                 success: false,
-                error: { message: "Phone, sessionId, and OTP are required", code: "MISSING_FIELDS" },
+                error: { message: "Email and OTP are required", code: "MISSING_FIELDS" },
             });
         }
 
-        // Verify OTP via 2Factor API
-        const apiKey = process.env.TWO_FACTOR_API_KEY;
-        const response = await fetch(
-            `https://2factor.in/API/V1/${apiKey}/SMS/VERIFY/${sessionId}/${otp}`,
-        );
-        const data = await response.json();
+        // Verify OTP from DB
+        const otpRecord = await Otp.findOne({ email, otp });
 
-        if (data.Status !== "Success") {
+        if (!otpRecord) {
             return res.status(400).json({
                 success: false,
-                error: { message: "Invalid OTP. Please try again.", code: "INVALID_OTP" },
+                error: { message: "Invalid or expired OTP. Please try again.", code: "INVALID_OTP" },
             });
         }
 
-        // Check if user already exists with this phone
-        const cleanPhone = phone.replace(/\D/g, "").slice(-10);
-        const existingUser = await User.findOne({ phone: cleanPhone });
+        // OTP Valid - Delete it
+        await Otp.deleteMany({ email });
+
+        // Check if user already exists with this email
+        const existingUser = await User.findOne({ email });
 
         res.json({
             success: true,
             data: {
                 verified: true,
-                phone: cleanPhone,
+                email,
                 userExists: !!existingUser,
                 message: "OTP verified successfully",
             },
@@ -179,16 +185,16 @@ router.post("/verify-otp", async (req, res) => {
 });
 
 // =====================================================
-// POST /api/auth/register — Register with phone + password
+// POST /api/auth/register — Register with email + password
 // =====================================================
 router.post("/register", async (req, res) => {
     try {
-        const { name, phone, password } = req.body;
+        const { name, email, password } = req.body;
 
-        if (!name || !phone || !password) {
+        if (!name || !email || !password) {
             return res.status(400).json({
                 success: false,
-                error: { message: "Name, phone, and password are required", code: "MISSING_FIELDS" },
+                error: { message: "Name, email, and password are required", code: "MISSING_FIELDS" },
             });
         }
 
@@ -199,23 +205,21 @@ router.post("/register", async (req, res) => {
             });
         }
 
-        const cleanPhone = phone.replace(/\D/g, "").slice(-10);
-
-        // Check if phone already registered
-        const existingUser = await User.findOne({ phone: cleanPhone });
+        // Check if email already registered
+        const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(409).json({
                 success: false,
-                error: { message: "Phone number already registered. Please login.", code: "PHONE_EXISTS" },
+                error: { message: "Email already registered. Please login.", code: "EMAIL_EXISTS" },
             });
         }
 
         const user = await User.create({
             name,
-            phone: cleanPhone,
+            email,
             password,
-            authProvider: "phone",
-            isPhoneVerified: true,
+            authProvider: "email",
+            isEmailVerified: true,
         });
 
         const token = generateToken(user._id);
@@ -234,23 +238,21 @@ router.post("/register", async (req, res) => {
 });
 
 // =====================================================
-// POST /api/auth/login — Login with phone + password
+// POST /api/auth/login — Login with email + password
 // =====================================================
 router.post("/login", async (req, res) => {
     try {
-        const { phone, password } = req.body;
+        const { email, password } = req.body;
 
-        if (!phone || !password) {
+        if (!email || !password) {
             return res.status(400).json({
                 success: false,
-                error: { message: "Phone and password are required", code: "MISSING_FIELDS" },
+                error: { message: "Email and password are required", code: "MISSING_FIELDS" },
             });
         }
 
-        const cleanPhone = phone.replace(/\D/g, "").slice(-10);
-
         // Find user with password included
-        const user = await User.findOne({ phone: cleanPhone }).select("+password");
+        const user = await User.findOne({ email }).select("+password");
 
         if (!user) {
             return res.status(401).json({
