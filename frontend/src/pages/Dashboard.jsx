@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import {
     Eye, Edit3, Globe, Clock, ExternalLink, Sparkles,
     LayoutTemplate, FileText, CheckCircle2, AlertCircle,
-    Copy, Share2, ChartNoAxesColumn, UserPlus, Code2, Rocket
+    Copy, Share2, ChartNoAxesColumn, UserPlus, Code2, ArrowRight, Rocket, Monitor, Smartphone, Tablet
 } from "lucide-react";
 import { dashboardAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
@@ -136,102 +136,85 @@ const Dashboard = () => {
                 >
                     {!portfolio ? (
                         /* ── Empty State ── */
-                        <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
+                        <motion.div variants={itemVariants} className="max-w-3xl mx-auto text-center py-10 sm:py-16">
+                            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-tr from-blue-50 to-indigo-50 text-blue-600 rounded-[32px] mb-8 shadow-inner border border-white/50">
+                                <Sparkles className="w-10 h-10" />
+                            </div>
+                            <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mb-5 tracking-tight leading-tight">
+                                Your portfolio journey <br className="hidden sm:block" /> starts here.
+                            </h2>
+                            <p className="text-base sm:text-lg text-slate-500 mb-12 max-w-xl mx-auto font-medium leading-relaxed">
+                                Build a stunning professional identity in minutes. Choose how you want to get started. No coding required.
+                            </p>
 
-                            <motion.div variants={itemVariants} className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                                <motion.div
-                                    initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: "spring" }}
-                                    className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-5 sm:mb-6"
+                            <div className="grid sm:grid-cols-2 gap-5 max-w-2xl mx-auto text-left">
+                                <motion.button
+                                    whileHover={{ y: -4, scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => navigate("/onboarding?method=resume")}
+                                    className="group relative bg-white border-2 border-slate-100 rounded-3xl p-6 sm:p-8 hover:border-blue-500 hover:shadow-xl hover:shadow-blue-500/10 transition-all transition-duration-300"
                                 >
-                                    <LayoutTemplate className="w-6 h-6" />
-                                </motion.div>
-                                <h2 className="text-lg sm:text-xl font-bold text-slate-900 mb-2">
-                                    Create your first portfolio
-                                </h2>
-                                <p className="text-sm sm:text-base text-slate-500 mb-6 sm:mb-8 max-w-lg">
-                                    Ready to stand out? Choose how you'd like to build your portfolio. Our AI can help you create content in seconds.
-                                </p>
+                                    <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                        <FileText className="w-6 h-6" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-slate-900 mb-3">Upload Resume</h3>
+                                    <p className="text-sm text-slate-500 font-medium leading-relaxed">
+                                        Fastest way. Upload your PDF and let our AI extract your timeline, skills, and projects instantly.
+                                    </p>
 
-                                <div className="grid sm:grid-cols-2 gap-4">
-                                    <motion.button
-                                        whileHover={{ y: -4 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={() => navigate("/onboarding?method=resume")}
-                                        className="group bg-slate-50/50 border border-slate-200 rounded-xl p-5 hover:border-blue-500 hover:bg-blue-50/10 transition-all text-left shadow-sm hover:shadow-md"
-                                    >
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0">
-                                                <FileText className="w-4 h-4" />
-                                            </div>
-                                            <h3 className="font-semibold text-slate-900">Upload Resume</h3>
-                                        </div>
-                                        <p className="text-sm text-slate-500 leading-relaxed">
-                                            Upload your PDF and let AI extract your timeline, skills, and projects instantly.
-                                        </p>
-                                    </motion.button>
+                                    <div className="absolute top-6 right-6 text-slate-200 group-hover:text-blue-500 transition-colors">
+                                        <ArrowRight className="w-5 h-5" />
+                                    </div>
+                                </motion.button>
 
-                                    <motion.button
-                                        whileHover={{ y: -4 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={() => navigate("/onboarding?method=chat")}
-                                        className="group bg-slate-50/50 border border-slate-200 rounded-xl p-5 hover:border-violet-500 hover:bg-violet-50/10 transition-all text-left relative overflow-hidden shadow-sm hover:shadow-md"
-                                    >
-                                        <div className="absolute top-3 right-3">
-                                            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-violet-600 bg-violet-100 px-2 py-1 rounded-md">Popular</span>
-                                        </div>
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-8 h-8 bg-violet-100 text-violet-600 rounded-lg flex items-center justify-center group-hover:bg-violet-600 group-hover:text-white transition-colors shrink-0">
-                                                <Sparkles className="w-4 h-4" />
-                                            </div>
-                                            <h3 className="pr-12 font-semibold text-slate-900">Chat with AI</h3>
-                                        </div>
-                                        <p className="text-sm text-slate-500 leading-relaxed">
-                                            Answer a few simple questions and watch the AI write your entire portfolio.
-                                        </p>
-                                    </motion.button>
-                                </div>
-                            </motion.div>
+                                <motion.button
+                                    whileHover={{ y: -4, scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => navigate("/onboarding?method=chat")}
+                                    className="group relative bg-white border-2 border-slate-100 rounded-3xl p-6 sm:p-8 hover:border-violet-500 hover:shadow-xl hover:shadow-violet-500/10 transition-all transition-duration-300 overflow-hidden"
+                                >
+                                    <div className="absolute top-0 right-0 bg-violet-500 text-white text-[10px] font-black uppercase tracking-wider py-1.5 px-4 rounded-bl-2xl">Popular</div>
+                                    <div className="w-12 h-12 bg-violet-50 text-violet-600 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-violet-600 group-hover:text-white transition-colors">
+                                        <Sparkles className="w-6 h-6" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-slate-900 mb-3">Chat with AI</h3>
+                                    <p className="text-sm text-slate-500 font-medium leading-relaxed">
+                                        Don't have a resume? Have a quick 2-minute chat with our AI to build your professional profile.
+                                    </p>
 
-                            {/* Right Column: Tips / Help */}
-                            <motion.div variants={itemVariants} className="bg-slate-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
-                                <motion.div
-                                    animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-                                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                                    className="absolute -right-10 -top-10 w-32 sm:w-40 h-32 sm:h-40 bg-blue-500 rounded-full blur-[60px] sm:blur-[80px] pointer-events-none"
-                                />
-                                <Rocket className="w-8 h-8 text-blue-400 mb-5 sm:mb-6" />
-                                <h3 className="text-base sm:text-lg font-bold mb-3">Why MyFolio?</h3>
-                                <ul className="space-y-3 sm:space-y-4">
-                                    {[
-                                        "No coding required, just clean UI.",
-                                        "AI-generated professional content.",
-                                        "Custom subdomains included.",
-                                        "Updates reflect instantly."
-                                    ].map((tip, i) => (
-                                        <motion.li
-                                            key={i}
-                                            initial={{ opacity: 0, x: 10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: 0.4 + i * 0.1 }}
-                                            className="flex gap-2 sm:gap-3 text-sm text-slate-300"
-                                        >
-                                            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 shrink-0 mt-0.5 sm:mt-0" />
-                                            {tip}
-                                        </motion.li>
-                                    ))}
-                                </ul>
-                            </motion.div>
-                        </div>
+                                    <div className="absolute top-6 right-6 text-slate-200 group-hover:text-violet-500 transition-colors">
+                                        <ArrowRight className="w-5 h-5" />
+                                    </div>
+                                </motion.button>
+                            </div>
+                        </motion.div>
                     ) : (
                         /* ── Portfolio Exists ── */
                         <div className="space-y-4 sm:space-y-6">
 
                             {/* Top Stats Grid */}
                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                                <StatCard icon={<Eye className="w-4 h-4 sm:w-5 sm:h-5" />} title="Total Views" value={portfolio.views ?? 0} trend="+12% w/w" />
-                                <StatCard icon={<ChartNoAxesColumn className="w-4 h-4 sm:w-5 sm:h-5" />} title="Status" value={portfolio.status === "published" ? "Live" : "Draft"} />
-                                <StatCard icon={<LayoutTemplate className="w-4 h-4 sm:w-5 sm:h-5" />} title="Theme Used" value={<span className="capitalize text-lg sm:text-2xl">{portfolio.templateSlug || "Minimal"}</span>} />
-                                <StatCard icon={<Clock className="w-4 h-4 sm:w-5 sm:h-5" />} title="Last Updated" value={portfolio.updatedAt ? new Date(portfolio.updatedAt).toLocaleDateString("en-US", { month: 'short', day: 'numeric' }) : "Today"} />
+                                <StatCard
+                                    icon={<Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
+                                    title="Total Views"
+                                    value={dashData?.analytics?.totalViews ?? portfolio.views ?? 0}
+                                    trend={dashData?.analytics?.recentViews > 0 ? `+${dashData.analytics.recentViews} recently` : null}
+                                />
+                                <StatCard
+                                    icon={<ChartNoAxesColumn className="w-4 h-4 sm:w-5 sm:h-5" />}
+                                    title="Status"
+                                    value={portfolio.status === "published" ? "Live" : "Draft"}
+                                />
+                                <StatCard
+                                    icon={<LayoutTemplate className="w-4 h-4 sm:w-5 sm:h-5" />}
+                                    title="Theme Used"
+                                    value={<span className="capitalize text-lg sm:text-2xl">{portfolio.templateSlug || "Minimal"}</span>}
+                                />
+                                <StatCard
+                                    icon={<Clock className="w-4 h-4 sm:w-5 sm:h-5" />}
+                                    title="Last Updated"
+                                    value={portfolio.updatedAt ? new Date(portfolio.updatedAt).toLocaleDateString("en-US", { month: 'short', day: 'numeric' }) : "Today"}
+                                />
                             </div>
 
                             <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
@@ -341,6 +324,43 @@ const Dashboard = () => {
                                         <div className="mt-auto p-4 bg-slate-50 border border-slate-100 rounded-xl text-center">
                                             <Globe className="w-6 h-6 text-slate-300 mx-auto mb-2" />
                                             <p className="text-xs text-slate-500 font-medium">Publish your portfolio to get a shareable link.</p>
+                                        </div>
+                                    )}
+                                </motion.div>
+
+                                {/* Audience Insights Card */}
+                                <motion.div variants={itemVariants} className="lg:col-span-3 bg-white border border-slate-200 rounded-2xl p-5 sm:p-8 shadow-sm">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+                                            <ChartNoAxesColumn className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-bold text-slate-900">Audience Insights</h3>
+                                            <p className="text-sm text-slate-500">Breakdown of devices your visitors are using.</p>
+                                        </div>
+                                    </div>
+
+                                    {dashData?.analytics?.totalViews > 0 ? (
+                                        <div className="grid grid-cols-3 gap-4">
+                                            <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl flex flex-col items-center justify-center text-center">
+                                                <Monitor className="w-6 h-6 text-slate-400 mb-2" />
+                                                <div className="text-2xl font-bold text-slate-900">{dashData.analytics.devices.desktop || 0}</div>
+                                                <div className="text-xs font-medium text-slate-500 uppercase tracking-wide mt-1">Desktop</div>
+                                            </div>
+                                            <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl flex flex-col items-center justify-center text-center">
+                                                <Smartphone className="w-6 h-6 text-slate-400 mb-2" />
+                                                <div className="text-2xl font-bold text-slate-900">{dashData.analytics.devices.mobile || 0}</div>
+                                                <div className="text-xs font-medium text-slate-500 uppercase tracking-wide mt-1">Mobile</div>
+                                            </div>
+                                            <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl flex flex-col items-center justify-center text-center">
+                                                <Tablet className="w-6 h-6 text-slate-400 mb-2" />
+                                                <div className="text-2xl font-bold text-slate-900">{dashData.analytics.devices.tablet || 0}</div>
+                                                <div className="text-xs font-medium text-slate-500 uppercase tracking-wide mt-1">Tablet</div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="py-8 bg-slate-50 border border-slate-100 border-dashed rounded-xl text-center">
+                                            <p className="text-sm text-slate-500 font-medium">Not enough data to show insights yet. Share your portfolio to get views!</p>
                                         </div>
                                     )}
                                 </motion.div>
